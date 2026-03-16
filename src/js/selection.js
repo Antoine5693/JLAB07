@@ -4,6 +4,8 @@ var player; // désigne le sprite du joueur
 var groupe_plateformes; // contient toutes les plateformes
 var clavier; // pour la gestion du clavier
 var bullets; // groupe de projectiles tirés par le joueur
+var lastFired = 0;
+var wasSpaceDown = false;
 export default class selection extends Phaser.Scene {
   constructor() {
     super({ key: "selection" });
@@ -33,7 +35,6 @@ export default class selection extends Phaser.Scene {
     groupe_plateformes.create(600, 450, "img_plateforme");
     groupe_plateformes.create(50, 300, "img_plateforme");
     groupe_plateformes.create(750, 270, "img_plateforme");
-    bullets = this.physics.add.group();
 
     /****************************
      *  CREATION DU PERSONNAGE  *
@@ -67,11 +68,13 @@ export default class selection extends Phaser.Scene {
 
 
     clavier = this.input.keyboard.createCursorKeys();
-
-
+    this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
     //  Collide the player and the groupe_etoiles with the groupe_plateformes
     this.physics.add.collider(player, groupe_plateformes);
+    bullets = this.physics.add.group({
+  allowGravity: false
+});
   }
 
   update() {
@@ -99,21 +102,26 @@ export default class selection extends Phaser.Scene {
       player.anims.play("anim_face", true);
     }
 
-    if (Phaser.Input.Keyboard.JustDown(clavier.space)) {
-      this.scene.start("niveau1");
-    }
+if (this.keySpace.isDown && !wasSpaceDown && this.time.now > lastFired) {
 
+  let bullet = bullets.create(player.x, player.y, "img_rondblanc");
+  bullet.setScale(0.05);
 
-    if (clavier.space.isDown) {
-
-      let bullet = bullets.create(player.x, player.y, "img_bullet");
-
-      if (player.body.velocity.x >= 0) {
+  if (clavier.up.isDown) {
+    bullet.setVelocityY(-400);
+  } else if (clavier.left.isDown) {
+    bullet.setVelocityX(-400);
+  } else if (clavier.right.isDown) {
         bullet.setVelocityX(400);
+  } else if (clavier.down.isDown) {
+    bullet.setVelocityY(400);
       } else {
-        bullet.setVelocityX(-400);
-      }
-
-    }
+    bullet.setVelocityX(400);
   }
+
+  lastFired = this.time.now + 300;
 }
+
+wasSpaceDown = this.keySpace.isDown;
+  }}
+
