@@ -20,12 +20,15 @@ export default class selection extends Phaser.Scene {
       frameHeight: 48
     });
     this.load.image("img_rondblanc", "src/assets/rondblanc.png");
+    this.load.image("img_heart", "src/assets/heart.png");
   }
 
   create() {
 
     this.add.image(400, 300, "img_ciel");
-
+    this.add.image(0, 0, "img_heart").setScale(0.09).setOrigin(0, 0);
+    this.add.image(35, 0, "img_heart").setScale(0.09).setOrigin(0, 0);
+    this.add.image(70, 0, "img_heart").setScale(0.09).setOrigin(0, 0);
     groupe_plateformes = this.physics.add.staticGroup();
 
     groupe_plateformes.create(200, 584, "img_plateforme");
