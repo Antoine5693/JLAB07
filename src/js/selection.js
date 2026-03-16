@@ -10,10 +10,27 @@ export default class selection extends Phaser.Scene {
 
 preload() {
   // tous les assets du jeu sont placés dans le sous-répertoire src/assets/
-  
+  this.load.image("img_ciel", "src/assets/sky.png");
+  this.load.image("img_plateforme", "src/assets/platform.png");
+  this.load.spritesheet("img_perso", "src/assets/dude.png", {
+    frameWidth: 32,
+    frameHeight: 48
+  });
 }
 
 create() {
+ 
+  this.add.image(400, 300, "img_ciel");
+
+  groupe_plateformes = this.physics.add.staticGroup();
+ 
+  groupe_plateformes.create(200, 584, "img_plateforme");
+  groupe_plateformes.create(600, 584, "img_plateforme");
+
+  //  on ajoute 3 platesformes flottantes
+  groupe_plateformes.create(600, 450, "img_plateforme");
+  groupe_plateformes.create(50, 300, "img_plateforme");
+  groupe_plateformes.create(750, 270, "img_plateforme");
 
   /****************************
    *  CREATION DU PERSONNAGE  *
@@ -55,21 +72,32 @@ create() {
 }
 
 update() {
+  player.setVelocityX(0);
+  player.setVelocityY(0);
+
+  // horizontal
   if (clavier.left.isDown) {
     player.setVelocityX(-160);
     player.anims.play("anim_tourne_gauche", true);
   } else if (clavier.right.isDown) {
     player.setVelocityX(160);
     player.anims.play("anim_tourne_droite", true);
-  } else {
-    player.setVelocityX(0);
-    player.anims.play("anim_face");
   }
 
-  if (clavier.up.isDown && player.body.touching.down) {
-    player.setVelocityY(-330);
+  // vertical
+  if (clavier.up.isDown) {
+    player.setVelocityY(-160);
+  } else if (clavier.down.isDown) {
+    player.setVelocityY(160);
   }
-    if (Phaser.Input.Keyboard.JustDown(clavier.space) == true) {
-      this.scene.start("niveau1");
-    } 
-}}
+
+  // idling
+  if (player.body.velocity.x === 0 && player.body.velocity.y === 0) {
+    player.anims.play("anim_face", true);
+  }
+
+  if (Phaser.Input.Keyboard.JustDown(clavier.space)) {
+    this.scene.start("niveau1");
+  }
+}
+}
