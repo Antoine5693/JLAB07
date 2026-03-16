@@ -7,6 +7,7 @@ var bullets; // groupe de projectiles tirés par le joueur
 var lastFired = 0;
 var wasSpaceDown = false;
 var lastDir = { x: 1, y: 0 }; // direction dans laquelle le joueur regarde
+var chest_opened = false; // pour éviter de rejouer l'animation du coffre une fois ouvert
 export default class selection extends Phaser.Scene {
   constructor() {
     super({ key: "selection" });
@@ -22,11 +23,19 @@ export default class selection extends Phaser.Scene {
     });
     this.load.image("img_rondblanc", "src/assets/rondblanc.png");
     this.load.image("img_heart", "src/assets/heart.png");
+    this.load.spritesheet("img_chest_anim", "src/assets/caisse.png", {
+      frameWidth: 72,
+      frameHeight: 62
+    });
   }
 
-  create() {
 
+  create() {
     this.add.image(400, 300, "img_ciel");
+
+    // Coffre fermé par défaut à partir de la frame 0 du spritesheet
+    this.chest = this.add.sprite(400, 300, "img_chest_anim", 0);
+
     this.add.image(0, 0, "img_heart").setScale(0.09).setOrigin(0, 0);
     this.add.image(35, 0, "img_heart").setScale(0.09).setOrigin(0, 0);
     this.add.image(70, 0, "img_heart").setScale(0.09).setOrigin(0, 0);
@@ -34,6 +43,8 @@ export default class selection extends Phaser.Scene {
     bullets = this.physics.add.group({
       allowGravity: false
     });
+    this.chest = this.physics.add.sprite(400, 300, "img_chest_anim", 0);
+    this.chest.setImmovable(true); // Le coffre ne bougera pas lorsqu'il sera touché par le joueur
 
     groupe_plateformes = this.physics.add.staticGroup();
 
@@ -44,6 +55,11 @@ export default class selection extends Phaser.Scene {
     groupe_plateformes.create(600, 450, "img_plateforme");
     groupe_plateformes.create(50, 300, "img_plateforme");
     groupe_plateformes.create(750, 270, "img_plateforme");
+
+    // Gestion du clavier
+    clavier = this.input.keyboard.createCursorKeys();
+    this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    enter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
     /****************************
      *  CREATION DU PERSONNAGE  *
@@ -75,16 +91,29 @@ export default class selection extends Phaser.Scene {
       repeat: -1
     });
 
+    // animation du coffre
+    this.anims.create({
+      key: "anim_chest",
+      frames: this.anims.generateFrameNumbers("img_chest_anim", { start: 0, end: 11 }),
+      frameRate: 10,
+      repeat: 0
+    });
 
-    clavier = this.input.keyboard.createCursorKeys();
-    this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+
 
     //  Collide the player and the groupe_etoiles with the groupe_plateformes
     this.physics.add.collider(player, groupe_plateformes);
-    this.physics.add.collider(bullets, groupe_plateformes, function(bullet, platform) {
+    this.physics.add.collider(bullets, groupe_plateformes, function (bullet, platform) {
       bullet.destroy();
-});
-    
+    });
+    this.physics.add.collider(this.chest, player, function (chest, player) {
+      if (enter.isDown && !chest_opened) {
+        chest.anims.play("anim_chest", true);
+        chest_opened = true;
+      }
+    });
+
   }
 
   update() {
@@ -122,18 +151,20 @@ export default class selection extends Phaser.Scene {
       if (clavier.down.isDown) lastDir.y = 1;
     }
 
-if (this.keySpace.isDown && !wasSpaceDown && this.time.now > lastFired) {
+    if (this.keySpace.isDown && !wasSpaceDown && this.time.now > lastFired) {
 
-  let bullet = bullets.create(player.x, player.y, "img_rondblanc");
-  bullet.setScale(0.05);
+      let bullet = bullets.create(player.x, player.y, "img_rondblanc");
+      bullet.setScale(0.05);
 
-  // Tirer dans la direction où regarde le joueur
-  bullet.setVelocityX(400 * lastDir.x);
-  bullet.setVelocityY(400 * lastDir.y);
+      // Tirer dans la direction où regarde le joueur
+      bullet.setVelocityX(400 * lastDir.x);
+      bullet.setVelocityY(400 * lastDir.y);
 
-  lastFired = this.time.now + 300;
+      lastFired = this.time.now + 300;
+    }
+
+    wasSpaceDown = this.keySpace.isDown;
+  }
 }
 
-wasSpaceDown = this.keySpace.isDown;
-  }}
-
+var enter;
