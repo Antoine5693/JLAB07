@@ -5,6 +5,12 @@ var lastFired = 0;
 var wasSpaceDown = false;
 var lastDir = { x: 1, y: 0 }; // direction dans laquelle le joueur regarde
 var chest_opened = false; // pour éviter de rejouer l'animation du coffre une fois ouvert
+var zone1; // zone de détection pour le PNJ
+var zone2; // zone de détection pour le PNJ
+var zone3; // zone de détection pour le PNJ
+var zone4; // zone de détection pour le PNJ
+var hasgun = false; // pour savoir si le joueur a récupéré le pistolet dans le PNJ
+
 var zone; // zone de détection pour le PNJ
 var porte; // pour la porte de transition vers le niveau 2
 var interact;
@@ -33,6 +39,16 @@ export default class selection extends Phaser.Scene {
     this.load.image("tuiles_de_jeu1", "src/assets/tileset1.png");
     this.load.image("tuiles_de_jeu3", "src/assets/tileset2.png");
     this.load.tilemapTiledJSON("carte", "src/assets/SafeZone.tmj");
+
+    // asset pour le npc
+    this.load.image('npc1', 'src/assets/PNJFILLE1.png');
+    this.load.image('npc2', 'src/assets/PNJHOMME1.png');
+    this.load.image('npc3', 'src/assets/PNJFILLE2.png');
+
+    this.load.spritesheet('npc4', 'src/assets/Militaire.png', {
+      frameWidth: 513 / 4,
+      frameHeight: 210
+    });
     // Charger le sprite sheet du boss zombie
     this.load.spritesheet("boss_zombie", "src/assets/Zombie boss attack spritesheet.png", {
       frameWidth: 154,
@@ -199,11 +215,11 @@ export default class selection extends Phaser.Scene {
     calque2.setCollisionByProperty({ estSolide: true });
     calque3.setCollisionByProperty({ estSolide: true });
     calque4.setCollisionByProperty({ estSolide: true });
-    
+
     // Création du boss zombie sur la map
     this.boss = this.physics.add.sprite(600, 200, "boss_jump1");
     this.boss.setScale(1.5); // taille du boss
-   // this.boss.setOrigin(0, 0.5); // Origine 
+    // this.boss.setOrigin(0, 0.5); // Origine 
     this.boss.setBounce(0.2);
     this.boss.anims.play("boss_jump1").setOrigin(1, 1); // Lancement de l'animation jump1 du boss dès sa création
     console.log("Boss zombie avec animation jump1 créé sur la map !");
@@ -215,13 +231,13 @@ export default class selection extends Phaser.Scene {
       callbackScope: this,
       loop: true
     });
-    
+
     // Collisions du boss avec la map
     this.physics.add.collider(this.boss, calque1);
     this.physics.add.collider(this.boss, calque2);
     this.physics.add.collider(this.boss, calque3);
     this.physics.add.collider(this.boss, calque4);
-    
+
 
 
 
@@ -230,15 +246,15 @@ export default class selection extends Phaser.Scene {
     this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
-           //création de la porte
-    porte = this.physics.add.staticSprite(625,60, "img_porte1", 0); 
+    //création de la porte
+    porte = this.physics.add.staticSprite(625, 60, "img_porte1", 0);
     //this.porte.setscale(0.5);
     this.anims.create({
-    key: "anim_ouvreporte1",
-    frames: this.anims.generateFrameNumbers("img_porte1", { start: 0, end: 8 }),
-    frameRate: 20,
-    repeat: 0
-  });
+      key: "anim_ouvreporte1",
+      frames: this.anims.generateFrameNumbers("img_porte1", { start: 0, end: 8 }),
+      frameRate: 20,
+      repeat: 0
+    });
 
     /****************************
      *  CREATION DU PERSONNAGE  *
@@ -283,6 +299,13 @@ export default class selection extends Phaser.Scene {
       repeat: 0
     });
 
+    this.anims.create({
+      key: "anim_militaire",
+      frames: this.anims.generateFrameNumbers("npc4", { start: 0, end: 3 }),
+      frameRate: 10,
+      repeat: 0
+    });
+
 
     // Collisions avec les calques solides de Tiled
     this.physics.add.collider(player, calque1);
@@ -307,7 +330,7 @@ export default class selection extends Phaser.Scene {
     this.physics.add.collider(this.chest, player, function (chest, player) {
       if (interact.isDown && !chest_opened) {
         chest.anims.play("anim_chest", true);
-       chest_opened = true;
+        chest_opened = true;
       }
     });
 
@@ -316,105 +339,257 @@ export default class selection extends Phaser.Scene {
      ****************************/
 
     // PNJ
+<<<<<<< HEAD
     this.npc1 = this.physics.add.staticSprite(300, 200, "img_perso", 4);
+=======
+    this.npc1 = this.physics.add.staticSprite(300, 200, "img_perso");
+>>>>>>> 3480ddfda0c09c38843eab68743f61b26c6ac7b9
     this.npc1.setScale(0.5);
     this.npc1.refreshBody();
 
+    this.npc2 = this.physics.add.staticSprite(130, 340, 'npc2');
+    this.npc2.setScale(0.30);
+    this.npc2.refreshBody();
+
+    this.npc3 = this.physics.add.staticSprite(650, 500, 'npc3');
+    this.npc3.setScale(0.40);
+    this.npc3.refreshBody();
+
+    this.npc4 = this.physics.add.staticSprite(800, 125, 'npc4');
+    this.npc4.setScale(0.40);
+    this.npc4.refreshBody();
+
     // Taille complète actuelle
-    const width = this.npc1.displayWidth;
-    const height = this.npc1.displayHeight;
+    const width1 = this.npc1.displayWidth;
+    const height1 = this.npc1.displayHeight;
+
+    const width2 = this.npc2.displayWidth;
+    const height2 = this.npc2.displayHeight;
+
+    const width3 = this.npc3.displayWidth;
+    const height3 = this.npc3.displayHeight;
+
+    const width4 = this.npc4.displayWidth;
+    const height4 = this.npc4.displayHeight;
+
 
     //  Hitbox = seulement partie haute 
-    this.npc1.setSize(width, height / (3 / 2));
+    this.npc1.setSize(width1, height1 / (3 / 2));
     this.physics.add.collider(player, this.npc1);
-    zone = this.add.zone(this.npc1.x, this.npc1.y, width * 2, height * 1.5);
-    this.physics.add.existing(zone, true);
+    zone1 = this.add.zone(this.npc1.x, this.npc1.y, width1 * 2, height1 * 1.5);
+    this.physics.add.existing(zone1, true);
+
+    this.npc2.setSize(width2, height2 / (3 / 2));
+    this.physics.add.collider(player, this.npc2);
+    zone2 = this.add.zone(this.npc2.x, this.npc2.y, width2 * 2, height2 * 1.5);
+    this.physics.add.existing(zone2, true);
+
+    this.npc3.setSize(width3, height3 / (3 / 2));
+    this.physics.add.collider(player, this.npc3);
+    zone3 = this.add.zone(this.npc3.x, this.npc3.y, width3 * 2, height3 * 1.5);
+    this.physics.add.existing(zone3, true);
+
+    this.npc4.setSize(width4, height4 / (5 / 2));
+    this.physics.add.collider(player, this.npc4);
+    zone4 = this.add.zone(this.npc4.x, this.npc4.y, width4 * 2, height4 * 1.5);
+    this.physics.add.existing(zone4, true);
+
 
     //  Décaler vers le haut
     this.npc1.setOffset(0, 0);
 
     // dialogue
-    this.textefille1 = this.add.text(this.npc1.x, this.npc1.y -100 , "Bonjour !", { 
+    this.textefille1 = this.add.text(this.npc1.x, this.npc1.y - 100, "Bonjour !", {
       font: "16px Arial",
-       fill: "#ffffff"  ,  
-       backgroundColor: "#000000",
-    padding: { x: 10, y: 5 }}
+      fill: "#ffffff",
+      backgroundColor: "#000000",
+      padding: { x: 10, y: 5 }
+    }
     ).setOrigin(0.5);
     this.textefille1.setVisible(false);
-    this.physics.add.overlap(player, zone, () => {
+    this.physics.add.overlap(player, zone1, () => {
       // Afficher le dialogue
       if (Phaser.Input.Keyboard.JustDown(interact)) {
+
         this.textefille1.setVisible(true);
+        this.time.delayedCall(5000, () => {
+          this.textefille1.setVisible(false);
+        });
       } else { }
-    
+
 
 
     });
 
 
-}
 
 
-    update() {
-      player.setVelocityX(0);
-      player.setVelocityY(0);
+    this.textehomme1 = this.add.text(this.npc2.x, this.npc2.y - 100, "SIX SEVENNNN !", {
+      font: "16px Arial",
+      fill: "#ffffff",
+      backgroundColor: "#000000",
+      padding: { x: 10, y: 5 }
+    }
+    ).setOrigin(0.5);
+    this.textehomme1.setVisible(false);
 
-      // horizontal
-      if (clavier.left.isDown) {
-        player.setVelocityX(-160);
-        player.anims.play("anim_tourne_gauche", true);
-      } else if (clavier.right.isDown) {
-        player.setVelocityX(160);
-        player.anims.play("anim_tourne_droite", true);
+    this.physics.add.overlap(player, zone2, () => {
+      // Afficher le dialogue
+      if (Phaser.Input.Keyboard.JustDown(interact)) {
+        this.textehomme1.setVisible(true);
+        this.time.delayedCall(5000, () => {
+          this.textehomme1.setVisible(false);
+        });
+      } else { }
+
+    });
+
+
+    this.textefille2 = this.add.text(this.npc3.x, this.npc3.y - 100, "Voici ton gun grrr pow", {
+      font: "16px Arial",
+      fill: "#ffffff",
+      backgroundColor: "#000000",
+      padding: { x: 10, y: 5 }
+    }
+    ).setOrigin(0.5);
+    this.textefille2.setVisible(false);
+    this.physics.add.overlap(player, zone3, () => {
+      // Afficher le dialogue
+      if (Phaser.Input.Keyboard.JustDown(interact)) {
+        this.textefille2.setVisible(true);
+        hasgun = true;
+        this.time.delayedCall(5000, () => {
+          this.textefille2.setVisible(false);
+        });
       }
+    });
 
-      // vertical
-      if (clavier.up.isDown) {
-        player.setVelocityY(-160);
-      } else if (clavier.down.isDown) {
-        player.setVelocityY(160);
+    this.textemilitaire = this.add.text(this.npc4.x, this.npc4.y - 100, "Je suis un militaire !", {
+      font: "16px Arial",
+      fill: "#ffffff",
+      backgroundColor: "#000000",
+      padding: { x: 10, y: 5 }
+    }
+    ).setOrigin(0.5);
+    this.textemilitaire.setVisible(false);
+    this.physics.add.overlap(player, zone4, () => {
+      // Afficher le dialogue
+      if (Phaser.Input.Keyboard.JustDown(interact)) {
+        this.npc4.anims.play("anim_militaire", true);
+        this.textemilitaire.setVisible(true);
+        this.time.delayedCall(5000, () => {
+          this.textemilitaire.setVisible(false);
+        });
       }
+    });
+  }
 
-      // idling
-      if (player.body.velocity.x === 0 && player.body.velocity.y === 0) {
-        player.anims.play("anim_face", true);
-      }
+  update() {
+    player.setVelocityX(0);
+    player.setVelocityY(0);
 
-      // Update lastDir based on pressed keys
-      if (clavier.left.isDown || clavier.right.isDown || clavier.up.isDown || clavier.down.isDown) {
-        lastDir.x = 0;
-        lastDir.y = 0;
-        if (clavier.left.isDown) lastDir.x = -1;
-        if (clavier.right.isDown) lastDir.x = 1;
-        if (clavier.up.isDown) lastDir.y = -1;
-        if (clavier.down.isDown) lastDir.y = 1;
-      }
+    // horizontal
+    if (clavier.left.isDown) {
+      player.setVelocityX(-160);
+      player.anims.play("anim_tourne_gauche", true);
+    } else if (clavier.right.isDown) {
+      player.setVelocityX(160);
+      player.anims.play("anim_tourne_droite", true);
+    }
 
-      if (this.keySpace.isDown && !wasSpaceDown && this.time.now > lastFired) {
+    // vertical
+    if (clavier.up.isDown) {
+      player.setVelocityY(-160);
+    } else if (clavier.down.isDown) {
+      player.setVelocityY(160);
+    }
 
-        let bullet = bullets.create(player.x, player.y, "img_rondblanc");
-        bullet.setScale(0.05);
+    // idling
+    if (player.body.velocity.x === 0 && player.body.velocity.y === 0) {
+      player.anims.play("anim_face", true);
+    }
 
-        // Tirer dans la direction où regarde le joueur
-        bullet.setVelocityX(400 * lastDir.x);
-        bullet.setVelocityY(400 * lastDir.y);
+    // Update lastDir based on pressed keys
+    if (clavier.left.isDown || clavier.right.isDown || clavier.up.isDown || clavier.down.isDown) {
+      lastDir.x = 0;
+      lastDir.y = 0;
+      if (clavier.left.isDown) lastDir.x = -1;
+      if (clavier.right.isDown) lastDir.x = 1;
+      if (clavier.up.isDown) lastDir.y = -1;
+      if (clavier.down.isDown) lastDir.y = 1;
+    }
 
-        lastFired = this.time.now + 300;
-      }
+    if (this.keySpace.isDown && !wasSpaceDown && this.time.now > lastFired && hasgun) {
+
+      let bullet = bullets.create(player.x, player.y, "img_rondblanc");
+      bullet.setScale(0.05);
+
+      // Tirer dans la direction où regarde le joueur
+      bullet.setVelocityX(400 * lastDir.x);
+      bullet.setVelocityY(400 * lastDir.y);
+
+      lastFired = this.time.now + 300;
+    }
+
+    wasSpaceDown = this.keySpace.isDown;
+    // horizontal
+    if (clavier.left.isDown) {
+      player.setVelocityX(-160);
+      player.anims.play("anim_tourne_gauche", true);
+    } else if (clavier.right.isDown) {
+      player.setVelocityX(160);
+      player.anims.play("anim_tourne_droite", true);
+    }
+
+    // vertical
+    if (clavier.up.isDown) {
+      player.setVelocityY(-160);
+    } else if (clavier.down.isDown) {
+      player.setVelocityY(160);
+    }
+
+    // idling
+    if (player.body.velocity.x === 0 && player.body.velocity.y === 0) {
+      player.anims.play("anim_face", true);
+    }
+
+    // Update lastDir based on pressed keys
+    if (clavier.left.isDown || clavier.right.isDown || clavier.up.isDown || clavier.down.isDown) {
+      lastDir.x = 0;
+      lastDir.y = 0;
+      if (clavier.left.isDown) lastDir.x = -1;
+      if (clavier.right.isDown) lastDir.x = 1;
+      if (clavier.up.isDown) lastDir.y = -1;
+      if (clavier.down.isDown) lastDir.y = 1;
+    }
+
+    if (this.keySpace.isDown && !wasSpaceDown && this.time.now > lastFired) {
+
+      let bullet = bullets.create(player.x, player.y, "img_rondblanc");
+      bullet.setScale(0.05);
+
+      // Tirer dans la direction où regarde le joueur
+      bullet.setVelocityX(400 * lastDir.x);
+      bullet.setVelocityY(400 * lastDir.y);
+
+      lastFired = this.time.now + 300;
+    }
 
     wasSpaceDown = this.keySpace.isDown;
 
-    if (Phaser.Input.Keyboard.JustDown(clavier.shift)==true) {
+    if (Phaser.Input.Keyboard.JustDown(clavier.shift) == true) {
       this.scene.start("Salle01");
-  }
+    }
 
-  if (open_porte1==false && Phaser.Input.Keyboard.JustDown(interact) == true &&
-    this.physics.overlap(player, porte) == true) {
-   // le personnage est sur la porte1 et vient d'appuyer sur la touche entrée
+
+    if (open_porte1 == false && Phaser.Input.Keyboard.JustDown(interact) == true &&
+      this.physics.overlap(player, porte) == true) {
+      // le personnage est sur la porte1 et vient d'appuyer sur la touche entrée
       open_porte1 = true;
-   porte.anims.play("anim_ouvreporte1");
-  } 
+      porte.anims.play("anim_ouvreporte1");
+    }
 
+  }
 }
-}
+
 var enter;
