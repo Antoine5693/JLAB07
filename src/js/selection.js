@@ -188,7 +188,10 @@ export default class selection extends Phaser.Scene {
     }
 
     wasSpaceDown = this.keySpace.isDown;
+
+    if (Phaser.Input.Keyboard.JustDown(clavier.shift)==true) {
+      this.scene.start("Salle01");
   }
 }
-
+}
 var enter;
