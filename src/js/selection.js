@@ -39,7 +39,7 @@ export default class selection extends Phaser.Scene {
     //asset porte
     this.load.spritesheet("img_porte1", "src/assets/Sritesheet_porte1coul_complet.png", {
     frameWidth: 96,
-    frameHeight: 120
+    frameHeight: 130
   }); 
 
   }
@@ -194,12 +194,12 @@ export default class selection extends Phaser.Scene {
 
     });
        //création de la porte
-    porte = this.physics.add.staticSprite(608,96, "img_porte1", 0); 
+    porte = this.physics.add.staticSprite(625,60, "img_porte1", 0); 
     //this.porte.setscale(0.5);
     this.anims.create({
     key: "anim_ouvreporte1",
     frames: this.anims.generateFrameNumbers("img_porte1", { start: 0, end: 8 }),
-    frameRate: 50,
+    frameRate: 20,
     repeat: 0
   });
 
