@@ -28,6 +28,51 @@ export default class selection extends Phaser.Scene {
     this.load.image("tuiles_de_jeu1", "src/assets/tileset1.png");
     this.load.image("tuiles_de_jeu3", "src/assets/tileset2.png");
     this.load.tilemapTiledJSON("carte", "src/assets/SafeZone.tmj");
+    // Charger le sprite sheet du boss zombie
+    this.load.spritesheet("boss_zombie", "src/assets/Zombie boss attack spritesheet.png", {
+      frameWidth: 154,
+      frameHeight: 159
+    });
+    this.load.spritesheet("boss_jump1", "src/assets/Zombie boss jump1 spritesheet.png", {
+      frameWidth: 126,
+      frameHeight: 225
+    });
+    this.load.spritesheet("boss_jump2", "src/assets/Zombie boss jump2 spritesheet.png", {
+      frameWidth: 135,
+      frameHeight: 201
+    });
+    this.load.spritesheet("boss_jump3", "src/assets/Zombie boss jump3 spritesheet.png", {
+      frameWidth: 134,
+      frameHeight: 140
+    });
+    this.load.spritesheet("boss_mort", "src/assets/Zombie boss deaths spritesheet.png", {
+      frameWidth: 168,
+      frameHeight: 169
+    });
+    this.load.spritesheet("blob_mort", "src/assets/blob mort spritesheet.png", {
+      frameWidth: 68,
+      frameHeight: 58
+    });
+    this.load.spritesheet("blob_move", "src/assets/blob move spritesheet.png", {
+      frameWidth: 73,
+      frameHeight: 52
+    });
+    this.load.spritesheet("blob_move", "src/assets/blob move spritesheet.png", {
+      frameWidth: 79,
+      frameHeight: 58
+    });
+    this.load.spritesheet("zombie_mort", "src/assets/zombiemort spritesheet.png", {
+      frameWidth: 32,
+      frameHeight: 30
+    });
+    this.load.spritesheet("zombie_deplacement", "src/assets/zombiedeplacement spritesheet.png", {
+      frameWidth: 30,
+      frameHeight: 30
+    });
+    this.load.spritesheet("zombie_attaque", "src/assets/zombieattaque spritesheet.png", {
+      frameWidth: 31,
+      frameHeight: 32
+    });
   }
 
 
@@ -36,10 +81,97 @@ export default class selection extends Phaser.Scene {
     this.add.image(0, 0, "img_heart").setScale(0.09).setOrigin(0, 0);
     this.add.image(35, 0, "img_heart").setScale(0.09).setOrigin(0, 0);
     this.add.image(70, 0, "img_heart").setScale(0.09).setOrigin(0, 0);
-    setOrigin(0.5,1)
+
     bullets = this.physics.add.group({
       allowGravity: false
     });
+    this.anims.create({
+      key: "boss_attack",
+      frames: this.anims.generateFrameNumbers("boss_zombie", { start: 0, end: 4 }),
+      frameRate: 5,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: "boss_jump1",
+      frames: this.anims.generateFrameNumbers("boss_jump1", { start: 0, end: 3 }),
+      frameRate: 8,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "boss_jump2",
+      frames: this.anims.generateFrameNumbers("boss_jump2", { start: 0, end: 3 }),
+      frameRate: 8,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "boss_jump3",
+      frames: this.anims.generateFrameNumbers("boss_jump3", { start: 0, end: 3 }),
+      frameRate: 8,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "boss_mort",
+      frames: this.anims.generateFrameNumbers("boss_mort", { start: 0, end: 24 }),
+      frameRate: 8,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "blob_mort",
+      frames: this.anims.generateFrameNumbers("blob_mort", { start: 0, end: 8 }),
+      frameRate: 8,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "blob_move",
+      frames: this.anims.generateFrameNumbers("blob_move", { start: 0, end: 7 }),
+      frameRate: 8,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "blob_attaque",
+      frames: this.anims.generateFrameNumbers("blob_attaque", { start: 0, end: 9 }),
+      frameRate: 8,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "zombie_mort",
+      frames: this.anims.generateFrameNumbers("zombie_mort", { start: 0, end: 7 }),
+      frameRate: 8,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "zombie_deplacement",
+      frames: this.anims.generateFrameNumbers("zombie_deplacement", { start: 0, end: 7 }),
+      frameRate: 8,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "zombie_attaque",
+      frames: this.anims.generateFrameNumbers("zombie_attaque", { start: 0, end: 6 }),
+      frameRate: 8,
+      repeat: 0
+    });
+
+    // Système d'enchaînement des animations jump
+    this.jumpSequence = ['boss_jump1', 'boss_jump2', 'boss_jump3'];
+    this.currentJumpIndex = 0;
+
+    // Fonction pour passer à l'animation suivante
+    this.nextJumpAnimation = () => {
+      this.currentJumpIndex = (this.currentJumpIndex + 1) % this.jumpSequence.length;
+      this.boss.anims.play(this.jumpSequence[this.currentJumpIndex]).setOrigin(1, 1);
+    };
+
     this.chest = this.physics.add.sprite(400, 300, "img_chest_anim", 0);
     this.chest.setImmovable(true); // Le coffre ne bougera pas lorsqu'il sera touché par le joueur
 
@@ -58,6 +190,28 @@ export default class selection extends Phaser.Scene {
     calque2.setCollisionByProperty({ estSolide: true });
     calque3.setCollisionByProperty({ estSolide: true });
     calque4.setCollisionByProperty({ estSolide: true });
+    
+    // Création du boss zombie sur la map
+    this.boss = this.physics.add.sprite(600, 200, "boss_jump1");
+    this.boss.setScale(1.5); // taille du boss
+   // this.boss.setOrigin(0, 0.5); // Origine 
+    this.boss.setBounce(0.2);
+    this.boss.anims.play("boss_jump1").setOrigin(1, 1); // Lancement de l'animation jump1 du boss dès sa création
+    console.log("Boss zombie avec animation jump1 créé sur la map !");
+
+    // Timer pour enchaîner les animations jump toutes les 0.5 secondes
+    this.time.addEvent({
+      delay: 500, // 0.5 seconde - plus rapide !
+      callback: this.nextJumpAnimation,
+      callbackScope: this,
+      loop: true
+    });
+    
+    // Collisions du boss avec la map
+    this.physics.add.collider(this.boss, calque1);
+    this.physics.add.collider(this.boss, calque2);
+    this.physics.add.collider(this.boss, calque3);
+    this.physics.add.collider(this.boss, calque4);
     
 
 
