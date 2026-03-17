@@ -36,7 +36,7 @@ export default class selection extends Phaser.Scene {
     this.add.image(0, 0, "img_heart").setScale(0.09).setOrigin(0, 0);
     this.add.image(35, 0, "img_heart").setScale(0.09).setOrigin(0, 0);
     this.add.image(70, 0, "img_heart").setScale(0.09).setOrigin(0, 0);
-
+    setOrigin(0.5,1)
     bullets = this.physics.add.group({
       allowGravity: false
     });
