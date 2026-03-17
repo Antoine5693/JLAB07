@@ -199,7 +199,7 @@ export default class selection extends Phaser.Scene {
     this.anims.create({
     key: "anim_ouvreporte1",
     frames: this.anims.generateFrameNumbers("img_porte1", { start: 0, end: 8 }),
-    frameRate: 20,
+    frameRate: 8,
     repeat: 0
   });
 
