@@ -38,7 +38,8 @@ export default class selection extends Phaser.Scene {
       frameWidth: 46,
       frameHeight: 21
     });
-
+    this.load.audio("son_tir", "src/assets/bullet-sound.mp3");
+   
     this.load.image("img_heart", "src/assets/heart.png");
     this.load.spritesheet("img_chest_anim", "src/assets/caisse.png", {
       frameWidth: 72,
@@ -159,6 +160,7 @@ export default class selection extends Phaser.Scene {
     this.sonGrowl = this.sound.add("growl");
     this.sonZombieAttaque = this.sound.add("son_zombie_attaque");
     this.sonZombieMort = this.sound.add("zombie_mort");
+    this.sonTir = this.sound.add("son_tir");
 
     this.anims.create({
       key: "boss_attack",
@@ -731,7 +733,7 @@ export default class selection extends Phaser.Scene {
 
       let bullet = bullets.create(player.x, player.y, "img_balle");
       bullet.setScale(0.25);
-
+      this.sonTir.play();
       // Tirer dans la direction où regarde le joueur
       bullet.setVelocityX(400 * lastDir.x);
       bullet.setVelocityY(400 * lastDir.y);
@@ -771,17 +773,7 @@ export default class selection extends Phaser.Scene {
       if (clavier.down.isDown) lastDir.y = 1;
     }
 
-    if (this.keySpace.isDown && !wasSpaceDown && this.time.now > lastFired) {
-
-      let bullet = bullets.create(player.x, player.y, "img_balle");
-      bullet.setScale(0.05);
-
-      // Tirer dans la direction où regarde le joueur
-      bullet.setVelocityX(400 * lastDir.x);
-      bullet.setVelocityY(400 * lastDir.y);
-
-      lastFired = this.time.now + 300;
-    }
+   
 
     wasSpaceDown = this.keySpace.isDown;
 
