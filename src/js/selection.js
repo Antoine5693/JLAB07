@@ -140,7 +140,7 @@ export default class selection extends Phaser.Scene {
     this.load.image("Dummy4", "src/assets/Dummy/Dummy4.png");
     this.load.image("Dummy5", "src/assets/Dummy/Dummy5.png");
 
-
+    this.load.image("empty_heart", "src/assets/empty_heart.png"); 
   }
 
 
@@ -379,13 +379,13 @@ export default class selection extends Phaser.Scene {
 
     this.slime.on("animationupdate", (anim, frame, sprite) => {
       if (anim.key === "blob_move_anim") {
-        // Vérifie si on est à la frame 8
-        if (frame.index === 7 && this.slime.lastSoundFrame !== 7) {
+        // Vérifie si on est à la frame 1
+        if (frame.index === 1 && this.slime.lastSoundFrame !== 1) {
           this.sonAttaqueBlob.play();
-          this.slime.lastSoundFrame = 7; // marque qu’on a joué le son pour ce cycle
+          this.slime.lastSoundFrame = 1; // marque qu’on a joué le son pour ce cycle
         }
         // Réinitialise la variable si on est passé à une autre frame
-        if (frame.index !== 7) {
+        if (frame.index !== 1) {
 
           this.slime.lastSoundFrame = frame.index;
          }
@@ -691,7 +691,8 @@ export default class selection extends Phaser.Scene {
       }
     });
 
-
+      // Initialisation de la vie du joueur à 3 et affichage des coeurs
+    this.registry.set('hp', 3);
     this.add.image(16, 16, "img_heart").setScale(0.09).setOrigin(0, 0).setScrollFactor(0);
     this.add.image(51, 16, "img_heart").setScale(0.09).setOrigin(0, 0).setScrollFactor(0);
     this.add.image(86, 16, "img_heart").setScale(0.09).setOrigin(0, 0).setScrollFactor(0);
@@ -745,40 +746,7 @@ export default class selection extends Phaser.Scene {
     }
 
     wasSpaceDown = this.keySpace.isDown;
-    // horizontal
-    if (clavier.left.isDown) {
-      player.setVelocityX(-160);
-      player.anims.play("anim_tourne_gauche", true);
-    } else if (clavier.right.isDown) {
-      player.setVelocityX(160);
-      player.anims.play("anim_tourne_droite", true);
-    }
-
-    // vertical
-    if (clavier.up.isDown) {
-      player.setVelocityY(-160);
-    } else if (clavier.down.isDown) {
-      player.setVelocityY(160);
-    }
-
-    // idling
-    if (player.body.velocity.x === 0 && player.body.velocity.y === 0) {
-      player.anims.play("anim_face", true);
-    }
-
-    // Update lastDir based on pressed keys
-    if (clavier.left.isDown || clavier.right.isDown || clavier.up.isDown || clavier.down.isDown) {
-      lastDir.x = 0;
-      lastDir.y = 0;
-      if (clavier.left.isDown) lastDir.x = -1;
-      if (clavier.right.isDown) lastDir.x = 1;
-      if (clavier.up.isDown) lastDir.y = -1;
-      if (clavier.down.isDown) lastDir.y = 1;
-    }
-
-   
-
-    wasSpaceDown = this.keySpace.isDown;
+    
 
     if (Phaser.Input.Keyboard.JustDown(clavier.shift) == true) {
       this.scene.start("Salle01");
