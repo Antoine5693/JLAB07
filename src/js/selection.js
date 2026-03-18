@@ -39,7 +39,7 @@ export default class selection extends Phaser.Scene {
       frameHeight: 21
     });
     this.load.audio("son_tir", "src/assets/bullet-sound.mp3");
-   
+
     this.load.image("img_heart", "src/assets/heart.png");
     this.load.spritesheet("img_chest_anim", "src/assets/caisse.png", {
       frameWidth: 72,
@@ -324,8 +324,8 @@ export default class selection extends Phaser.Scene {
     calque2.setCollisionByProperty({ estSolide: true });
     calque3.setCollisionByProperty({ estSolide: true });
     calque4.setCollisionByProperty({ estSolide: true });
-    
-   
+
+
     // Création du boss zombie sur la map
     this.boss = this.physics.add.sprite(600, 200, "boss_jump1");
     this.boss.setScale(1.5); // taille du boss
@@ -414,30 +414,30 @@ export default class selection extends Phaser.Scene {
         if (frame.index !== 1) {
 
           this.slime.lastSoundFrame = frame.index;
-         }
-     }
- });
-  //son attaque slime
-  this.slime.on("animationstart", (anim) => {
-    if (anim.key === "blob_attaque") {
-      this.sonAttaqueBlob.play();
-     }
-}); 
-  //creation zombie
-  this.zombie = this.physics.add.sprite(500, 350, "zombie_deplacement");
+        }
+      }
+    });
+    //son attaque slime
+    this.slime.on("animationstart", (anim) => {
+      if (anim.key === "blob_attaque") {
+        this.sonAttaqueBlob.play();
+      }
+    });
+    //creation zombie
+    this.zombie = this.physics.add.sprite(500, 350, "zombie_deplacement");
 
-       
 
-  this.zombie.setScale(2.9);
-  this.zombie.setCollideWorldBounds(true);
-  this.zombie.setBounce(1);
 
-  // animation de déplacement
-  this.zombie.anims.play("zombie_deplacement", true);
-  this.physics.add.collider(this.zombie, calque1);
-  this.physics.add.collider(this.zombie, calque2);
-  this.physics.add.collider(this.zombie, calque3);
-  this.physics.add.collider(this.zombie, calque4);
+    this.zombie.setScale(2.9);
+    this.zombie.setCollideWorldBounds(true);
+    this.zombie.setBounce(1);
+
+    // animation de déplacement
+    this.zombie.anims.play("zombie_deplacement", true);
+    this.physics.add.collider(this.zombie, calque1);
+    this.physics.add.collider(this.zombie, calque2);
+    this.physics.add.collider(this.zombie, calque3);
+    this.physics.add.collider(this.zombie, calque4);
 
  
  this.rodeur = this.physics.add.sprite(700, 400, "rodeurDroite");
@@ -793,7 +793,7 @@ this.physics.add.collider(this.rodeur, calque4);
     }
 
     wasSpaceDown = this.keySpace.isDown;
-    
+
     let distanceX = player.x - this.rodeur.x;
 let distanceY = player.y - this.rodeur.y;
 
@@ -838,7 +838,7 @@ else {
       });
       porte.anims.play("anim_ouvreporte1");
     }
-    
+
 
     if (Phaser.Input.Keyboard.JustDown(P) == true) {
       this.scene.start("Couloir1");

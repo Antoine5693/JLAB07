@@ -291,17 +291,15 @@ export default class Couloir1 extends Phaser.Scene {
       if (open_escalier1 == false && this.physics.overlap(player, escalier1) == true) {
         // le personnage est sur l'escalier1 et vient d'appuyer sur la touche entrée
         open_escalier1 = true;
-        this.time.delayedCall(500, () => {
-          this.scene.start("Couloir2");
-        });
+        this.scene.start("Couloir2");
+
       }
 
       if (open_escalier2 == false && this.physics.overlap(player, escalier2) == true) {
         // le personnage est sur l'escalier2 et vient d'appuyer sur la touche entrée
         open_escalier2 = true;
-        this.time.delayedCall(500, () => {
-          this.scene.start("Couloir2");
-        });
+        this.scene.start("Couloir2");
+
       }
     }
 
