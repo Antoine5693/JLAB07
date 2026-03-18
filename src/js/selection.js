@@ -17,6 +17,7 @@ var P;
 var V;
 var O;
 var U;
+var E;
 var interact;
 var porte; // pour la porte de transition vers le niveau 2
 var open_porte1 = false;//gère l'état de la porte 1
@@ -39,7 +40,7 @@ export default class selection extends Phaser.Scene {
       frameHeight: 21
     });
     this.load.audio("son_tir", "src/assets/bullet-sound.mp3");
-   
+
     this.load.image("img_heart", "src/assets/heart.png");
     this.load.spritesheet("img_chest_anim", "src/assets/caisse.png", {
       frameWidth: 72,
@@ -324,8 +325,8 @@ export default class selection extends Phaser.Scene {
     calque2.setCollisionByProperty({ estSolide: true });
     calque3.setCollisionByProperty({ estSolide: true });
     calque4.setCollisionByProperty({ estSolide: true });
-    
-   
+
+
     // Création du boss zombie sur la map
     this.boss = this.physics.add.sprite(600, 200, "boss_jump1");
     this.boss.setScale(1.5); // taille du boss
@@ -414,30 +415,30 @@ export default class selection extends Phaser.Scene {
         if (frame.index !== 1) {
 
           this.slime.lastSoundFrame = frame.index;
-         }
-     }
- });
-  //son attaque slime
-  this.slime.on("animationstart", (anim) => {
-    if (anim.key === "blob_attaque") {
-      this.sonAttaqueBlob.play();
-     }
-}); 
-  //creation zombie
-  this.zombie = this.physics.add.sprite(500, 350, "zombie_deplacement");
+        }
+      }
+    });
+    //son attaque slime
+    this.slime.on("animationstart", (anim) => {
+      if (anim.key === "blob_attaque") {
+        this.sonAttaqueBlob.play();
+      }
+    });
+    //creation zombie
+    this.zombie = this.physics.add.sprite(500, 350, "zombie_deplacement");
 
-       
 
-  this.zombie.setScale(2.9);
-  this.zombie.setCollideWorldBounds(true);
-  this.zombie.setBounce(1);
 
-  // animation de déplacement
-  this.zombie.anims.play("zombie_deplacement", true);
-  this.physics.add.collider(this.zombie, calque1);
-  this.physics.add.collider(this.zombie, calque2);
-  this.physics.add.collider(this.zombie, calque3);
-  this.physics.add.collider(this.zombie, calque4);
+    this.zombie.setScale(2.9);
+    this.zombie.setCollideWorldBounds(true);
+    this.zombie.setBounce(1);
+
+    // animation de déplacement
+    this.zombie.anims.play("zombie_deplacement", true);
+    this.physics.add.collider(this.zombie, calque1);
+    this.physics.add.collider(this.zombie, calque2);
+    this.physics.add.collider(this.zombie, calque3);
+    this.physics.add.collider(this.zombie, calque4);
 
  
  this.rodeur = this.physics.add.sprite(700, 400, "rodeurDroite");
@@ -467,6 +468,7 @@ this.physics.add.collider(this.rodeur, calque4);
     V = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.V);
     O = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.O);
     U = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.U);
+    E = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
 
     //création de la porte
     porte = this.physics.add.staticSprite(625, 60, "img_porte1", 0);
@@ -739,6 +741,7 @@ this.physics.add.collider(this.rodeur, calque4);
 
       // Initialisation de la vie du joueur à 3 et affichage des coeurs
     this.registry.set('hp', 3);
+    this.registry.set('hpMax', 3);
     this.add.image(16, 16, "img_heart").setScale(0.09).setOrigin(0, 0).setScrollFactor(0);
     this.add.image(51, 16, "img_heart").setScale(0.09).setOrigin(0, 0).setScrollFactor(0);
     this.add.image(86, 16, "img_heart").setScale(0.09).setOrigin(0, 0).setScrollFactor(0);
