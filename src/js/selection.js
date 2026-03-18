@@ -34,7 +34,11 @@ export default class selection extends Phaser.Scene {
       frameWidth: 32,
       frameHeight: 48
     });
-    this.load.image("img_rondblanc", "src/assets/rondblanc.png");
+    this.load.image("img_balle", "src/assets/bullet.png", {
+      frameWidth: 46,
+      frameHeight: 21
+    });
+
     this.load.image("img_heart", "src/assets/heart.png");
     this.load.spritesheet("img_chest_anim", "src/assets/caisse.png", {
       frameWidth: 72,
@@ -294,7 +298,8 @@ export default class selection extends Phaser.Scene {
     calque2.setCollisionByProperty({ estSolide: true });
     calque3.setCollisionByProperty({ estSolide: true });
     calque4.setCollisionByProperty({ estSolide: true });
-
+    
+   
     // Création du boss zombie sur la map
     this.boss = this.physics.add.sprite(600, 200, "boss_jump1");
     this.boss.setScale(1.5); // taille du boss
@@ -544,8 +549,8 @@ export default class selection extends Phaser.Scene {
     this.physics.add.collider(player, this.dummy);
     this.physics.add.collider(bullets, this.dummy, (objA, objB) => {
       // Identifier qui est la balle et qui est le dummy
-      let bullet = objA.texture.key === 'img_rondblanc' ? objA : objB;
-      let dummy = objA.texture.key === 'img_rondblanc' ? objB : objA;
+      let bullet = objA.texture.key === 'img_balle' ? objA : objB;
+      let dummy = objA.texture.key === 'img_balle' ? objB : objA;
 
       bullet.disableBody(true, true);
       dummy.anims.play("anim_Dummy", true);
@@ -724,8 +729,8 @@ export default class selection extends Phaser.Scene {
 
     if (this.keySpace.isDown && !wasSpaceDown && this.time.now > lastFired && hasgun) {
 
-      let bullet = bullets.create(player.x, player.y, "img_rondblanc");
-      bullet.setScale(0.05);
+      let bullet = bullets.create(player.x, player.y, "img_balle");
+      bullet.setScale(0.25);
 
       // Tirer dans la direction où regarde le joueur
       bullet.setVelocityX(400 * lastDir.x);
@@ -768,7 +773,7 @@ export default class selection extends Phaser.Scene {
 
     if (this.keySpace.isDown && !wasSpaceDown && this.time.now > lastFired) {
 
-      let bullet = bullets.create(player.x, player.y, "img_rondblanc");
+      let bullet = bullets.create(player.x, player.y, "img_balle");
       bullet.setScale(0.05);
 
       // Tirer dans la direction où regarde le joueur
