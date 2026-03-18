@@ -95,7 +95,11 @@ export default class Couloir2 extends Phaser.Scene {
     calque1.setCollisionByProperty({ estSolide: true });
     calque2.setCollisionByProperty({ estSolide: true });
 
-    player = this.physics.add.sprite(1024, 2208, "dude.png");
+const spawn = this.scene.settings.data || {};
+const startX = spawn.x ?? 1056;
+const startY = spawn.y ?? 2204;
+
+player = this.physics.add.sprite(startX, startY, "dude.png");
     player.refreshBody();
     player.setBounce(0.2);
     player.setCollideWorldBounds(true);
@@ -240,7 +244,7 @@ export default class Couloir2 extends Phaser.Scene {
           }
     
           if (this.physics.overlap(player, escalier1) == true) {
-            this.scene.start("Couloir1", { x: 3386, y: 2320 });
+            this.scene.start("Couloir1", { x: 3392, y: 2330 });
           }}
     
 
