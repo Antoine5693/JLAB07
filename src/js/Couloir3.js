@@ -93,16 +93,7 @@ const spawn = this.scene.settings.data || {};
 const startX = spawn.x ?? 1530;
 const startY = spawn.y ?? 2325;
 
-player = this.physics.add.sprite(startX, startY, "dude.png");
-    player.refreshBody();
-    player.setBounce(0.2);
-    player.setCollideWorldBounds(true);
-    this.physics.add.collider(player, calque1);
-    this.physics.add.collider(player, calque2);
-    this.clavier = this.input.keyboard.createCursorKeys();
-    this.physics.add.collider(player, this.groupe_plateformes);
-
-    //création des portes de transition vers les salles
+//création des portes de transition vers les salles
     porte1 = this.physics.add.staticSprite(1011, 512, "img_porteC3_1", 0);
     open_portec3_1 = false;
     this.anims.create({
@@ -147,6 +138,15 @@ player = this.physics.add.sprite(startX, startY, "dude.png");
     //création de l'escalier1
     escalier1 = this.physics.add.staticSprite(1536, 2420, "img_escalier1", 0);
 
+
+player = this.physics.add.sprite(startX, startY, "dude.png");
+    player.refreshBody();
+    player.setBounce(0.2);
+    player.setCollideWorldBounds(true);
+    this.physics.add.collider(player, calque1);
+    this.physics.add.collider(player, calque2);
+    this.clavier = this.input.keyboard.createCursorKeys();
+    this.physics.add.collider(player, this.groupe_plateformes);
 
     // Caméra centrée sur le joueur
     this.cameras.main.startFollow(player);
