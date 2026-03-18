@@ -83,13 +83,13 @@ export default class selection extends Phaser.Scene {
       frameWidth: 168,
       frameHeight: 169
     });
-    this.load.spritesheet("boss_moveG", "src/assets/zombiebossdéplacementG.png", {
-      frameWidth: 205,
-      frameHeight: 285
+    this.load.spritesheet("boss_moveG", "src/assets/bosszombiedeplacementG_v2.png", {
+      frameWidth: 155,
+      frameHeight: 222
     });
-    this.load.spritesheet("boss_moveD", "src/assets/zombiebossdéplacementD.png", {
-      frameWidth: 221,
-      frameHeight: 257
+    this.load.spritesheet("boss_moveD", "src/assets/bosszombiedeplacementD_v2.png", {
+      frameWidth: 188,
+      frameHeight: 220
     });
     this.load.audio("son_attaquesautee", "src/assets/boss_zombie_jumpattaque_sound.mp3");
     this.load.audio("son_épée", "src/assets/bosszombie_attaque_sound.mp3");
@@ -204,14 +204,14 @@ export default class selection extends Phaser.Scene {
       key: "boss_moveG",
       frames: this.anims.generateFrameNumbers("boss_moveG", { start: 0, end: 6 }),
       frameRate: 8,
-      repeat: 0
+      repeat: -1
     });
 
     this.anims.create({
       key: "boss_moveD",
       frames: this.anims.generateFrameNumbers("boss_moveD", { start: 0, end: 5 }),
       frameRate: 8,
-      repeat: 0
+      repeat: -1
     });
 
 
@@ -333,7 +333,7 @@ export default class selection extends Phaser.Scene {
     this.boss.setBounce(0.2);
     this.boss.anims.play("boss_jump1").setOrigin(1, 1); // Lancement de l'animation jump1 du boss dès sa création
     console.log("Boss zombie avec animation jump1 créé sur la map !");
-
+    
     //son attaque sautée du boss
     this.boss.on("animationstart", (anim) => {
 
@@ -745,112 +745,105 @@ this.physics.add.collider(this.rodeur, calque4);
   }
 
   update() {
-    player.setVelocityX(0);
-    player.setVelocityY(0);
+    
+    // Sécurité : vérifier que le joueur existe
+    if (!player) return;
 
-    // horizontal
+    // Réinitialisation des vitesses du joueur
+    player.setVelocity(0);
+
+    // Déplacement horizontal
     if (clavier.left.isDown) {
-      player.setVelocityX(-160);
-      player.anims.play("anim_tourne_gauche", true);
+        player.setVelocityX(-160);
+        player.anims.play("anim_tourne_gauche", true);
     } else if (clavier.right.isDown) {
-      player.setVelocityX(160);
-      player.anims.play("anim_tourne_droite", true);
+        player.setVelocityX(160);
+        player.anims.play("anim_tourne_droite", true);
     }
 
-    // vertical
-    if (clavier.up.isDown) {
-      player.setVelocityY(-160);
-    } else if (clavier.down.isDown) {
-      player.setVelocityY(160);
-    }
+    // Déplacement vertical
+    if (clavier.up.isDown) player.setVelocityY(-160);
+    else if (clavier.down.isDown) player.setVelocityY(160);
 
-    // idling
+    // Idling si le joueur ne bouge pas
     if (player.body.velocity.x === 0 && player.body.velocity.y === 0) {
-      player.anims.play("anim_face", true);
+        player.anims.play("anim_face", true);
     }
 
-    // Update lastDir based on pressed keys
-    if (clavier.left.isDown || clavier.right.isDown || clavier.up.isDown || clavier.down.isDown) {
-      lastDir.x = 0;
-      lastDir.y = 0;
-      if (clavier.left.isDown) lastDir.x = -1;
-      if (clavier.right.isDown) lastDir.x = 1;
-      if (clavier.up.isDown) lastDir.y = -1;
-      if (clavier.down.isDown) lastDir.y = 1;
-    }
+    // Mise à jour de la dernière direction pour tirer
+    lastDir.x = 0;
+    lastDir.y = 0;
+    if (clavier.left.isDown) lastDir.x = -1;
+    if (clavier.right.isDown) lastDir.x = 1;
+    if (clavier.up.isDown) lastDir.y = -1;
+    if (clavier.down.isDown) lastDir.y = 1;
 
+    // Tir du joueur
     if (this.keySpace.isDown && !wasSpaceDown && this.time.now > lastFired && hasgun) {
-
-      let bullet = bullets.create(player.x, player.y, "img_balle");
-      bullet.setScale(0.25);
-      this.sonTir.play();
-      // Tirer dans la direction où regarde le joueur
-      bullet.setVelocityX(400 * lastDir.x);
-      bullet.setVelocityY(400 * lastDir.y);
-
-      lastFired = this.time.now + 300;
+        let bullet = bullets.create(player.x, player.y, "img_balle");
+        bullet.setScale(0.25);
+        this.sonTir.play();
+        bullet.setVelocityX(400 * lastDir.x);
+        bullet.setVelocityY(400 * lastDir.y);
+        lastFired = this.time.now + 300;
     }
-
     wasSpaceDown = this.keySpace.isDown;
-    
-    let distanceX = player.x - this.rodeur.x;
-let distanceY = player.y - this.rodeur.y;
 
-let vitesse = 60;
+    // Déplacement du rodeur vers le joueur
+    if (this.rodeur && player) {
+        let dx = player.x - this.rodeur.x;
+        let dy = player.y - this.rodeur.y;
+        let vitesse = 60;
 
-// mouvement horizontal
-if (distanceX > 5) {
-    this.rodeur.setVelocityX(vitesse);
-    this.rodeur.anims.play("rodeurDroite", true);
-}
-else if (distanceX < -5) {
-    this.rodeur.setVelocityX(-vitesse);
-    this.rodeur.anims.play("rodeurGauche", true);
-}
-else {
-    this.rodeur.setVelocityX(0);
-}
+        this.rodeur.setVelocityX(0);
+        this.rodeur.setVelocityY(0);
 
-// mouvement vertical
-if (distanceY > 5) {
-    this.rodeur.setVelocityY(vitesse);
-}
-else if (distanceY < -5) {
-    this.rodeur.setVelocityY(-vitesse);
-}
-else {
-    this.rodeur.setVelocityY(0);
-}
+        // Mouvement horizontal
+        if (dx > 5) {
+            this.rodeur.setVelocityX(vitesse);
+            this.rodeur.anims.play("rodeurDroite", true);
+        } else if (dx < -5) {
+            this.rodeur.setVelocityX(-vitesse);
+            this.rodeur.anims.play("rodeurGauche", true);
+        }
 
-    if (Phaser.Input.Keyboard.JustDown(clavier.shift) == true) {
-      this.scene.start("Salle01");
+        // Mouvement vertical
+        if (dy > 5) this.rodeur.setVelocityY(vitesse);
+        else if (dy < -5) this.rodeur.setVelocityY(-vitesse);
     }
 
-    //ouverture de la porte et transition vers couloir
+    // Déplacement du boss vers le joueur
+    if (this.boss && player) {
+        let dx = player.x - this.boss.x;
+        let dy = player.y - this.boss.y;
+        let magnitude = Math.sqrt(dx * dx + dy * dy);
+        let speed = 80;
 
-    if (open_porte1 == false && Phaser.Input.Keyboard.JustDown(interact) == true &&
-      this.physics.overlap(player, porte) == true && this.hastalkedtomilitaire == true && hasgun == true) {
-      // le personnage est sur la porte1 et vient d'appuyer sur la touche entrée
-      open_porte1 = true;
-      this.time.delayedCall(500, () => {
-        this.scene.start("Couloir1");
-      });
-      porte.anims.play("anim_ouvreporte1");
+        // Sécurité contre division par zéro
+        if (magnitude > 0) {
+            let vx = (dx / magnitude) * speed;
+            let vy = (dy / magnitude) * speed;
+            this.boss.setVelocityX(vx);
+            this.boss.setVelocityY(vy);
+        }
     }
-    
 
-    if (Phaser.Input.Keyboard.JustDown(P) == true) {
-      this.scene.start("Couloir1");
+    // Ouverture de la porte et transition vers le couloir
+    if (!open_porte1 &&
+        Phaser.Input.Keyboard.JustDown(interact) &&
+        this.physics.overlap(player, porte) &&
+        this.hastalkedtomilitaire &&
+        hasgun) {
+        open_porte1 = true;
+        porte.anims.play("anim_ouvreporte1");
+        this.time.delayedCall(500, () => {
+            this.scene.start("Couloir1");
+        });
     }
-    if (Phaser.Input.Keyboard.JustDown(V) == true) {
-      this.scene.start("Couloir2");
-    }
-    if (Phaser.Input.Keyboard.JustDown(O) == true) {
-      this.scene.start("Couloir3");
-    }
-    if (Phaser.Input.Keyboard.JustDown(U) == true) {
-      this.scene.start("BossZone");
-    }
-  }
-}
-var enter;
+
+    // Raccourcis pour tester les transitions de scènes
+    if (Phaser.Input.Keyboard.JustDown(P)) this.scene.start("Couloir1");
+    if (Phaser.Input.Keyboard.JustDown(V)) this.scene.start("Couloir2");
+    if (Phaser.Input.Keyboard.JustDown(O)) this.scene.start("Couloir3");
+    if (Phaser.Input.Keyboard.JustDown(U)) this.scene.start("BossZone");
+}}
