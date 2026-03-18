@@ -56,7 +56,8 @@ export default class selection extends Phaser.Scene {
     });
 
 
-    // Charger le sprite sheet du boss zombie
+    // Charger le sprite sheet des mobs avec leur sons
+    //boss zombie
     this.load.spritesheet("boss_zombie", "src/assets/Zombie boss attack spritesheet.png", {
       frameWidth: 154,
       frameHeight: 159
@@ -77,27 +78,42 @@ export default class selection extends Phaser.Scene {
       frameWidth: 168,
       frameHeight: 169
     });
-    this.load.spritesheet("blob_mort", "src/assets/blob mort spritesheet.png", {
+    this.load.spritesheet("boss_moveG", "src/assets/zombiebossdéplacementG.png", {
+      frameWidth: 205,
+      frameHeight: 285
+    });
+    this.load.spritesheet("boss_moveD", "src/assets/zombiebossdéplacementD.png", {
+      frameWidth: 221,
+      frameHeight: 257
+    });
+    this.load.audio("son_attaquesautee", "src/assets/boss_zombie_jumpattaque_sound.mp3");
+    this.load.audio("son_épée", "src/assets/bosszombie_attaque_sound.mp3");
+
+    //slime
+    this.load.spritesheet("blob_mort", "src/assets/blob mort.png", {
       frameWidth: 68,
       frameHeight: 58
     });
-    this.load.spritesheet("blob_move", "src/assets/blob move spritesheet.png", {
+    this.load.spritesheet("blob_move", "src/assets/blob move.png", {
       frameWidth: 73,
       frameHeight: 52
     });
-    this.load.spritesheet("blob_move", "src/assets/blob move spritesheet.png", {
+    this.load.spritesheet("blob_attaque", "src/assets/blob attaque.png", {
       frameWidth: 79,
       frameHeight: 58
     });
-    this.load.spritesheet("zombie_mort", "src/assets/zombiemort spritesheet.png", {
+    this.load.audio("attaque_blob", "src/assets/slime_attack.mp3");
+    
+
+    this.load.spritesheet("zombie_mort", "src/assets/zombiemort.png", {
       frameWidth: 32,
       frameHeight: 30
     });
-    this.load.spritesheet("zombie_deplacement", "src/assets/zombiedeplacement spritesheet.png", {
+    this.load.spritesheet("zombie_deplacement", "src/assets/zombiedeplacement.png", {
       frameWidth: 30,
       frameHeight: 30
     });
-    this.load.spritesheet("zombie_attaque", "src/assets/zombieattaque spritesheet.png", {
+    this.load.spritesheet("zombie_attaque", "src/assets/zombieattaque.png", {
       frameWidth: 31,
       frameHeight: 32
     });
@@ -127,6 +143,12 @@ create() {
     bullets = this.physics.add.group({
       allowGravity: false
     });
+    //sons mobs
+    this.sonAttaqueSautée = this.sound.add("son_attaquesautee");
+    this.sonAttaqueÉpée = this.sound.add("son_épée");
+    this.sonAttaqueBlob = this.sound.add("attaque_blob");
+
+
     this.anims.create({
       key: "boss_attack",
       frames: this.anims.generateFrameNumbers("boss_zombie", { start: 0, end: 4 }),
@@ -154,6 +176,21 @@ create() {
       frameRate: 8,
       repeat: 0
     });
+
+    this.anims.create({
+      key: "boss_moveG",
+      frames: this.anims.generateFrameNumbers("boss_moveG", { start: 0, end: 6 }),
+      frameRate: 8,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "boss_moveD",
+      frames: this.anims.generateFrameNumbers("boss_moveD", { start: 0, end: 5 }),
+      frameRate: 8,
+      repeat: 0
+    });
+
 
     this.anims.create({
       key: "boss_mort",
@@ -255,6 +292,22 @@ create() {
     this.boss.anims.play("boss_jump1").setOrigin(1, 1); // Lancement de l'animation jump1 du boss dès sa création
     console.log("Boss zombie avec animation jump1 créé sur la map !");
 
+    //son attaque sautée du boss
+    this.boss.on("animationstart", (anim) => {
+
+    if (anim.key === "boss_jump2") {
+    this.sonAttaqueSautée.play();
+  }
+
+});
+
+  //son attaque épée du boss
+  this.boss.on("animationstart", (anim) => {
+    if (anim.key === "boss_attack") {
+      this.sonAttaqueÉpée.play();
+    }
+  });
+
     // Timer pour enchaîner les animations jump toutes les 0.5 secondes
     this.time.addEvent({
       delay: 500, // 0.5 seconde - plus rapide !
@@ -269,6 +322,52 @@ create() {
     this.physics.add.collider(this.boss, calque3);
     this.physics.add.collider(this.boss, calque4);
 
+    this.anims.create({
+   key: "blob_move_anim",
+   frames: this.anims.generateFrameNumbers("blob_move", { start: 0, end: 7 }),
+   frameRate: 6,
+   repeat: -1 
+  });
+    // Création du slime
+   this.slime = this.physics.add.sprite(300, 400, "blob_move");
+
+   this.slime.setBounce(1);
+   this.slime.setCollideWorldBounds(true);
+   this.slime.setScale(1.2);
+
+  // lancer l'animation de déplacement
+  this.slime.setVelocityX(80); // vitesse horizontale
+  this.slime.anims.play("blob_move_anim",true).setOrigin(0.5,0.5);
+
+    
+
+  this.physics.add.collider(this.slime, calque1);
+  this.physics.add.collider(this.slime, calque2);
+  this.physics.add.collider(this.slime, calque3);
+  this.physics.add.collider(this.slime, calque4);
+
+  //son move du slime
+   this.slime.lastSoundFrame = -1;
+
+    this.slime.on("animationupdate", (anim, frame, sprite) => {
+    if (anim.key === "blob_move_anim") {
+        // Vérifie si on est à la frame 8
+        if (frame.index === 7 && this.slime.lastSoundFrame !== 7) {
+            this.sonAttaqueBlob.play();
+            this.slime.lastSoundFrame = 7; // marque qu’on a joué le son pour ce cycle
+         }
+        // Réinitialise la variable si on est passé à une autre frame
+        if (frame.index !== 7) {
+            this.slime.lastSoundFrame = frame.index;
+         }
+     }
+ });
+  //son attaque slime
+  this.slime.on("animationstart", (anim) => {
+    if (anim.key === "blob_attaque") {
+      this.sonAttaqueBlob.play();
+     }
+}); 
 
 
 
@@ -283,6 +382,7 @@ create() {
 
     //création de la porte
     porte = this.physics.add.staticSprite(625, 60, "img_porte1", 0);
+    open_porte1 = false;
     //this.porte.setscale(0.5);
     this.anims.create({
       key: "anim_ouvreporte1",
@@ -534,6 +634,11 @@ create() {
         if (!this.hastalkedtomilitaire) {
           this.npc4.anims.play("anim_militaire", true);
         }
+        if (!hasgun) {
+          this.textemilitaire.setText("Va parler à la fille pour avoir une arme !");
+        } else {
+          this.textemilitaire.setText("Bonne chance pour la suite !");
+        }
         this.hastalkedtomilitaire = true;
         this.textemilitaire.setVisible(true);
         this.time.delayedCall(5000, () => {
@@ -642,9 +747,12 @@ create() {
 
 
     if (open_porte1 == false && Phaser.Input.Keyboard.JustDown(interact) == true &&
-      this.physics.overlap(player, porte) == true) {
+      this.physics.overlap(player, porte) == true && this.hastalkedtomilitaire == true && hasgun == true) {
       // le personnage est sur la porte1 et vient d'appuyer sur la touche entrée
       open_porte1 = true;
+      this.time.delayedCall(500, () => {
+        this.scene.start("Couloir1");
+      });
       porte.anims.play("anim_ouvreporte1");
     }
 
