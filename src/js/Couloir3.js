@@ -103,7 +103,7 @@ player = this.physics.add.sprite(startX, startY, "dude.png");
     this.physics.add.collider(player, this.groupe_plateformes);
 
     //création des portes de transition vers les salles
-    porte1 = this.physics.add.staticSprite(1043, 512, "img_porteC3_1", 0);
+    porte1 = this.physics.add.staticSprite(1011, 512, "img_porteC3_1", 0);
     open_portec3_1 = false;
     this.anims.create({
       key: "anim_ouvreporte1",

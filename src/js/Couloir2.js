@@ -99,6 +99,56 @@ const spawn = this.scene.settings.data || {};
 const startX = spawn.x ?? 1056;
 const startY = spawn.y ?? 2204;
 
+ //création de la porte c2_1
+    porte1 = this.physics.add.staticSprite(1107, 383, "img_porteC2_1", 0);
+    open_portec2_1 = false;
+    this.anims.create({
+      key: "anim_ouvreporte1",
+      frames: this.anims.generateFrameNumbers("img_porteC2_1", { start: 0, end: 7 }),
+      frameRate: 20,
+      repeat: 0
+    });
+    //création de la porte c2_2
+    porte2 = this.physics.add.staticSprite(1681, 383, "img_porteC2_2", 0);
+    open_portec2_2 = false;
+    this.anims.create({
+      key: "anim_ouvreporte2",
+      frames: this.anims.generateFrameNumbers("img_porteC2_2", { start: 0, end: 7 }),
+      frameRate: 20,
+      repeat: 0
+    });
+    //création de la porte c2_3
+    porte3 = this.physics.add.staticSprite(2353, 383, "img_porteC2_3", 0);
+    open_portec2_3 = false;
+    this.anims.create({
+      key: "anim_ouvreporte3",
+      frames: this.anims.generateFrameNumbers("img_porteC2_3", { start: 0, end: 7 }),
+      frameRate: 20,
+      repeat: 0
+    });
+    //création de la porte c2_4
+    porte4 = this.physics.add.staticSprite(1585, 1503, "img_porteC2_4", 0);
+    open_portec2_4 = false;
+    this.anims.create({
+      key: "anim_ouvreporte4",
+      frames: this.anims.generateFrameNumbers("img_porteC2_4", { start: 0, end: 7 }),
+      frameRate: 20,
+      repeat: 0
+    });
+    //création de la porte c2_5
+    porte5 = this.physics.add.staticSprite(2257, 1055, "img_porteC2_5", 0);
+    open_portec2_5 = false;
+    this.anims.create({
+      key: "anim_ouvreporte5",
+      frames: this.anims.generateFrameNumbers("img_porteC2_5", { start: 0, end: 7 }),
+      frameRate: 20,
+      repeat: 0
+    });
+
+
+    //création de l'escalier1
+    escalier1 = this.physics.add.staticSprite(1054, 2298, "img_escalier1", 0);
+
 player = this.physics.add.sprite(startX, startY, "dude.png");
     player.refreshBody();
     player.setBounce(0.2);
@@ -113,55 +163,7 @@ player = this.physics.add.sprite(startX, startY, "dude.png");
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
-    //création de la porte c2_1
-    porte1 = this.physics.add.staticSprite(1026, 378, "img_porteC2_1", 0);
-    open_portec2_1 = false;
-    this.anims.create({
-      key: "anim_ouvreporte1",
-      frames: this.anims.generateFrameNumbers("img_porteC2_1", { start: 0, end: 7 }),
-      frameRate: 20,
-      repeat: 0
-    });
-    //création de la porte c2_2
-    porte2 = this.physics.add.staticSprite(1696, 378, "img_porteC2_2", 0);
-    open_portec2_2 = false;
-    this.anims.create({
-      key: "anim_ouvreporte2",
-      frames: this.anims.generateFrameNumbers("img_porteC2_2", { start: 0, end: 7 }),
-      frameRate: 20,
-      repeat: 0
-    });
-    //création de la porte c2_3
-    porte3 = this.physics.add.staticSprite(2368, 378, "img_porteC2_3", 0);
-    open_portec2_3 = false;
-    this.anims.create({
-      key: "anim_ouvreporte3",
-      frames: this.anims.generateFrameNumbers("img_porteC2_3", { start: 0, end: 7 }),
-      frameRate: 20,
-      repeat: 0
-    });
-    //création de la porte c2_4
-    porte4 = this.physics.add.staticSprite(1600, 1498, "img_porteC2_4", 0);
-    open_portec2_4 = false;
-    this.anims.create({
-      key: "anim_ouvreporte4",
-      frames: this.anims.generateFrameNumbers("img_porteC2_4", { start: 0, end: 7 }),
-      frameRate: 20,
-      repeat: 0
-    });
-    //création de la porte c2_5
-    porte5 = this.physics.add.staticSprite(2272, 1050, "img_porteC2_5", 0);
-    open_portec2_5 = false;
-    this.anims.create({
-      key: "anim_ouvreporte5",
-      frames: this.anims.generateFrameNumbers("img_porteC2_5", { start: 0, end: 7 }),
-      frameRate: 20,
-      repeat: 0
-    });
-
-
-    //création de l'escalier1
-    escalier1 = this.physics.add.staticSprite(1054, 2298, "img_escalier1", 0);
+   
 
 
     // Animations du joueur
