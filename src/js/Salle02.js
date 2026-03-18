@@ -19,7 +19,7 @@ export default class Salle02 extends Phaser.Scene {
     // assets pour le tilemap
     this.load.image("B", "src/assets/Background.png");
     this.load.image("D", "src/assets/Dela_dec2.png");
-    this.load.tilemapTiledJSON("carte2", "src/assets/Salle01.tmj");
+    this.load.tilemapTiledJSON("carte02", "src/assets/Salle01.tmj");
 
     //asset pour la porte de transition vers couloir1
     this.load.spritesheet("img_porte1", "src/assets/porte1finie.png", {
@@ -36,7 +36,7 @@ export default class Salle02 extends Phaser.Scene {
     enter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
     // Création du tilemap et des plateformes à partir de Tiled
-    const map = this.add.tilemap("carte2");
+    const map = this.add.tilemap( "carte02" );
     const tileset1 = map.addTilesetImage("Background", "B");
     const tileset3 = map.addTilesetImage("1", "D");
     const calque1 = map.createLayer("Calque de Tuiles 1", [tileset1]);

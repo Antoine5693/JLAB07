@@ -94,7 +94,9 @@ export default class selection extends Phaser.Scene {
     this.load.audio("son_attaquesautee", "src/assets/boss_zombie_jumpattaque_sound.mp3");
     this.load.audio("son_épée", "src/assets/bosszombie_attaque_sound.mp3");
     this.load.audio("growl", "src/assets/growling_sound.mp3");
+
     //slime
+
     this.load.spritesheet("blob_mort", "src/assets/blob mort.png", {
       frameWidth: 68,
       frameHeight: 58
@@ -132,6 +134,16 @@ export default class selection extends Phaser.Scene {
       frameHeight: 128
     });
 
+    this.load.spritesheet("rodeurGauche", "src/assets/rodeurG.png",{
+        frameWidth: 151,
+        frameHeight: 178
+    });
+
+    this.load.spritesheet("rodeurDroite", "src/assets/rodeurD.png",{
+        frameWidth: 160,
+        frameHeight: 162
+    });
+    this.load.audio("son_rodeur", "src/assets/rodeur_sound.mp3");
 
     this.load.image("Dummy0", "src/assets/Dummy/Dummy0.png");
     this.load.image("Dummy1", "src/assets/Dummy/Dummy1.png");
@@ -140,7 +152,7 @@ export default class selection extends Phaser.Scene {
     this.load.image("Dummy4", "src/assets/Dummy/Dummy4.png");
     this.load.image("Dummy5", "src/assets/Dummy/Dummy5.png");
 
-
+    this.load.image("empty_heart", "src/assets/empty_heart.png"); 
   }
 
 
@@ -251,6 +263,20 @@ export default class selection extends Phaser.Scene {
       frameRate: 8,
       repeat: 0
     });
+
+    this.anims.create({
+  key: "rodeurDroite",
+  frames: this.anims.generateFrameNumbers("rodeurDroite", { start: 0, end: 5 }),
+  frameRate: 5,
+  repeat: -1
+ });
+
+ this.anims.create({
+  key: "rodeurGauche",
+  frames: this.anims.generateFrameNumbers("rodeurGauche", { start: 0, end: 5 }),
+  frameRate: 5,
+  repeat: -1
+ });
 
     this.anims.create({
       key: "anim_Dummy",
@@ -412,6 +438,26 @@ export default class selection extends Phaser.Scene {
     this.physics.add.collider(this.zombie, calque2);
     this.physics.add.collider(this.zombie, calque3);
     this.physics.add.collider(this.zombie, calque4);
+
+ 
+ this.rodeur = this.physics.add.sprite(700, 400, "rodeurDroite");
+
+this.rodeur.setScale(0.6);
+this.rodeur.setCollideWorldBounds(true);
+this.rodeur.setBounce(1);
+this.sonRodeur = this.sound.add("son_rodeur", {
+  loop: true,
+  volume: 1.8
+});
+this.sonRodeur.play();
+this.rodeur.setVelocityX(100);
+this.rodeur.anims.play("rodeurDroite", true);
+this.physics.add.collider(this.rodeur, calque1);
+this.physics.add.collider(this.rodeur, calque2);
+this.physics.add.collider(this.rodeur, calque3);
+this.physics.add.collider(this.rodeur, calque4);
+
+
 
     // Gestion du clavier
     clavier = this.input.keyboard.createCursorKeys();
@@ -691,7 +737,8 @@ export default class selection extends Phaser.Scene {
       }
     });
 
-
+      // Initialisation de la vie du joueur à 3 et affichage des coeurs
+    this.registry.set('hp', 3);
     this.add.image(16, 16, "img_heart").setScale(0.09).setOrigin(0, 0).setScrollFactor(0);
     this.add.image(51, 16, "img_heart").setScale(0.09).setOrigin(0, 0).setScrollFactor(0);
     this.add.image(86, 16, "img_heart").setScale(0.09).setOrigin(0, 0).setScrollFactor(0);
@@ -746,6 +793,34 @@ export default class selection extends Phaser.Scene {
 
     wasSpaceDown = this.keySpace.isDown;
 
+    let distanceX = player.x - this.rodeur.x;
+let distanceY = player.y - this.rodeur.y;
+
+let vitesse = 60;
+
+// mouvement horizontal
+if (distanceX > 5) {
+    this.rodeur.setVelocityX(vitesse);
+    this.rodeur.anims.play("rodeurDroite", true);
+}
+else if (distanceX < -5) {
+    this.rodeur.setVelocityX(-vitesse);
+    this.rodeur.anims.play("rodeurGauche", true);
+}
+else {
+    this.rodeur.setVelocityX(0);
+}
+
+// mouvement vertical
+if (distanceY > 5) {
+    this.rodeur.setVelocityY(vitesse);
+}
+else if (distanceY < -5) {
+    this.rodeur.setVelocityY(-vitesse);
+}
+else {
+    this.rodeur.setVelocityY(0);
+}
 
     if (Phaser.Input.Keyboard.JustDown(clavier.shift) == true) {
       this.scene.start("Salle01");
