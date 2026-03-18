@@ -748,6 +748,7 @@ export default class selection extends Phaser.Scene {
     }
 
     //ouverture de la porte et transition vers couloir
+
     if (open_porte1 == false && Phaser.Input.Keyboard.JustDown(interact) == true &&
       this.physics.overlap(player, porte) == true && this.hastalkedtomilitaire == true && hasgun == true) {
       // le personnage est sur la porte1 et vient d'appuyer sur la touche entrée
@@ -756,8 +757,11 @@ export default class selection extends Phaser.Scene {
         this.scene.start("Couloir1");
       });
       porte.anims.play("anim_ouvreporte1");
-    }
-
+    } /*else console.log("Conditions non remplies pour ouvrir la porte : ", {
+      overlap: this.physics.overlap(player, porte),
+      hastalkedtomilitaire: this.hastalkedtomilitaire,
+      hasgun: hasgun
+    });*/
 
     if (Phaser.Input.Keyboard.JustDown(P) == true) {
       this.scene.start("Couloir1");
