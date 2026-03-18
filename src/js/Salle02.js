@@ -30,6 +30,8 @@ export default class Salle02 extends Phaser.Scene {
 
   create() {
 
+interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+
     // clavier pour les déplacements du personnage
     clavier = this.input.keyboard.createCursorKeys();
     this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
@@ -45,7 +47,7 @@ export default class Salle02 extends Phaser.Scene {
     calque3.setCollisionByProperty({ estSolide: true });
 
     //création de la porte
-    porte = this.physics.add.staticSprite(320, 96, "img_porte1", 0);
+    porte = this.physics.add.staticSprite(335, 65, "img_porte1", 0);
     open_porte1 = false;
     this.anims.create({
       key: "anim_ouvreporte1",

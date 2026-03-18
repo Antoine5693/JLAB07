@@ -17,6 +17,7 @@ var P;
 var V;
 var O;
 var U;
+var E;
 var interact;
 var porte; // pour la porte de transition vers le niveau 2
 var open_porte1 = false;//gère l'état de la porte 1
@@ -467,6 +468,7 @@ this.physics.add.collider(this.rodeur, calque4);
     V = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.V);
     O = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.O);
     U = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.U);
+    E = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
 
     //création de la porte
     porte = this.physics.add.staticSprite(625, 60, "img_porte1", 0);
@@ -850,6 +852,9 @@ else {
     }
     if (Phaser.Input.Keyboard.JustDown(U) == true) {
       this.scene.start("BossZone");
+    }
+    if (Phaser.Input.Keyboard.JustDown(E) == true) {
+      this.scene.start("Salle02");
     }
   }
 }

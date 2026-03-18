@@ -177,11 +177,9 @@ export default class Couloir1 extends Phaser.Scene {
 
     //création de l'escalier1
     escalier1 = this.physics.add.staticSprite(3392, 2425, "img_escalier1", 0);
-    open_escalier1 = false;
 
     //création de l'escalier2 
     escalier2 = this.physics.add.staticSprite(1280, 2204, "img_escalier2", 0);
-    open_escalier2 = false;
 
 
 

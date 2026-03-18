@@ -24,7 +24,6 @@ var open_portec2_5 = false;
 
 // escaliers1
 var escalier1;
-var open_escalier1 = false;
 
 export default class Couloir2 extends Phaser.Scene {
   // constructeur de la classe
@@ -77,6 +76,8 @@ export default class Couloir2 extends Phaser.Scene {
   }
 
   create() {
+
+    interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
     // clavier pour les déplacements du personnage
     clavier = this.input.keyboard.createCursorKeys();
@@ -157,7 +158,7 @@ export default class Couloir2 extends Phaser.Scene {
 
     //création de l'escalier1
     escalier1 = this.physics.add.staticSprite(1054, 2298, "img_escalier1", 0);
-    open_escalier1 = false;
+
 
     // Animations du joueur
     this.anims.create({
@@ -179,92 +180,92 @@ export default class Couloir2 extends Phaser.Scene {
       frameRate: 10,
       repeat: -1
     });
-    interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+
+
 
   }
 
   update() {
+    player.setVelocityX(0);
+    player.setVelocityY(0);
 
-    //ouverture des portes/escaliers
-    if (Phaser.Input.Keyboard.JustDown(interact) == true) {
-      //ouverture de la porte 1
-      if (open_portec2_1 == false && this.physics.overlap(player, porte1) == true) {
-        // le personnage est sur la porte1 et vient d'appuyer sur la touche entrée
-        open_portec2_1 = true;
-        this.time.delayedCall(500, () => {
-          this.scene.start("selection");
-        });
-        porte1.anims.play("anim_ouvreporte1");
-      }
-      //ouverture de la porte 2
-      if (open_portec2_2 == false && this.physics.overlap(player, porte2) == true) {
-        // le personnage est sur la porte2 et vient d'appuyer sur la touche entrée
-        open_portec2_2 = true;
-        this.time.delayedCall(500, () => {
-          this.scene.start("selection");
-        });
-        porte2.anims.play("anim_ouvreporte2");
-      }
-      //ouverture de la porte 3
-      if (open_portec2_3 == false && this.physics.overlap(player, porte3) == true) {
-        // le personnage est sur la porte3 et vient d'appuyer sur la touche entrée
-        open_portec2_3 = true;
-        this.time.delayedCall(500, () => {
-          this.scene.start("selection");
-        });
-        porte3.anims.play("anim_ouvreporte3");
-      }
-      //ouverture de la porte 4
-      if (open_portec2_4 == false && this.physics.overlap(player, porte4) == true) {
-        // le personnage est sur la porte4 et vient d'appuyer sur la touche entrée
-        open_portec2_4 = true;
-        this.time.delayedCall(500, () => {
-          this.scene.start("selection");
-        });
-        porte4.anims.play("anim_ouvreporte4");
-      }
-      //ouverture de la porte 5
-      if (open_portec2_5 == false && this.physics.overlap(player, porte5) == true) {
-        // le personnage est sur la porte5 et vient d'appuyer sur la touche entrée
-        open_portec2_5 = true;
-        this.time.delayedCall(500, () => {
-          this.scene.start("selection");
-        });
-        porte5.anims.play("anim_ouvreporte5");
-      }
+    
+        //ouverture des portes/escaliers
+        if (Phaser.Input.Keyboard.JustDown(interact) == true) {
+          //ouverture de la porte 1
+          if (open_portec2_1 == false && this.physics.overlap(player, porte1) == true) {
+            // le personnage est sur la porte1 et vient d'appuyer sur la touche entrée
+            open_portec2_1 = true;
+            this.time.delayedCall(500, () => {
+              this.scene.start("selection");
+            });
+            porte1.anims.play("anim_ouvreporte1");
+          }
 
-      if (this.physics.overlap(player, escalier1) == true) {
-        this.scene.start("Couloir1");
-      }
+          //ouverture de la porte 2
+          if (open_portec2_2 == false && this.physics.overlap(player, porte2) == true) {
+            // le personnage est sur la porte2 et vient d'appuyer sur la touche entrée
+            open_portec2_2 = true;
+            this.time.delayedCall(500, () => {
+              this.scene.start("selection");
+            });
+            porte2.anims.play("anim_ouvreporte2");
+          }
+          //ouverture de la porte 3
+          if (open_portec2_3 == false && this.physics.overlap(player, porte3) == true) {
+            // le personnage est sur la porte3 et vient d'appuyer sur la touche entrée
+            open_portec2_3 = true;
+            this.time.delayedCall(500, () => {
+              this.scene.start("selection");
+            });
+            porte3.anims.play("anim_ouvreporte3");
+          }
+          //ouverture de la porte 4
+          if (open_portec2_4 == false && this.physics.overlap(player, porte4) == true) {
+            // le personnage est sur la porte4 et vient d'appuyer sur la touche entrée
+            open_portec2_4 = true;
+            this.time.delayedCall(500, () => {
+              this.scene.start("selection");
+            });
+            porte4.anims.play("anim_ouvreporte4");
+          }
+          //ouverture de la porte 5
+          if (open_portec2_5 == false && this.physics.overlap(player, porte5) == true) {
+            // le personnage est sur la porte5 et vient d'appuyer sur la touche entrée
+            open_portec2_5 = true;
+            this.time.delayedCall(500, () => {
+              this.scene.start("selection");
+            });
+            porte5.anims.play("anim_ouvreporte5");
+          }
+    
+          if (this.physics.overlap(player, escalier1) == true) {
+            this.scene.start("Couloir1");
+          }}
+    
 
-
-      // DEPLACEMENT DU PERSONNAGE
-
-      player.setVelocityX(0);
-      player.setVelocityY(0);
-
-      // horizontal
-      if (clavier.left.isDown) {
-        player.setVelocityX(-160);
-        player.anims.play("anim_tourne_gauche", true);
-      } else if (clavier.right.isDown) {
-        player.setVelocityX(160);
-        player.anims.play("anim_tourne_droite", true);
-      }
-
-      // vertical
-      if (clavier.up.isDown) {
-        player.setVelocityY(-160);
-      } else if (clavier.down.isDown) {
-        player.setVelocityY(160);
-      }
-
-      // idling
-      if (player.body.velocity.x === 0 && player.body.velocity.y === 0) {
-        player.anims.play("anim_face", true);
-      }
-
-
+    // horizontal
+    if (clavier.left.isDown) {
+      player.setVelocityX(-160);
+      player.anims.play("anim_tourne_gauche", true);
+    } else if (clavier.right.isDown) {
+      player.setVelocityX(160);
+      player.anims.play("anim_tourne_droite", true);
     }
+
+    // vertical
+    if (clavier.up.isDown) {
+      player.setVelocityY(-160);
+    } else if (clavier.down.isDown) {
+      player.setVelocityY(160);
+    }
+
+    // idling
+    if (player.body.velocity.x === 0 && player.body.velocity.y === 0) {
+      player.anims.play("anim_face", true);
+    }
+
+
   }
 }
+

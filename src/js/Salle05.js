@@ -1,6 +1,11 @@
 var player;
-var clavier; 
+var clavier;
 var enter;
+var interact;
+
+// variables pour la porte de transition vers couloir1
+var porte; // pour la porte de transition vers couloir1
+var open_porte1 = false;//gère l'état de la porte 1
 
 export default class Salle05 extends Phaser.Scene {
   // constructeur de la classe
