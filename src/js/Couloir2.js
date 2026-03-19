@@ -95,7 +95,61 @@ export default class Couloir2 extends Phaser.Scene {
     calque1.setCollisionByProperty({ estSolide: true });
     calque2.setCollisionByProperty({ estSolide: true });
 
-    player = this.physics.add.sprite(1024, 2208, "dude.png");
+const spawn = this.scene.settings.data || {};
+const startX = spawn.x ?? 1056;
+const startY = spawn.y ?? 2204;
+
+ //création de la porte c2_1
+    porte1 = this.physics.add.staticSprite(1107, 383, "img_porteC2_1", 0);
+    open_portec2_1 = false;
+    this.anims.create({
+      key: "anim_ouvreporte1",
+      frames: this.anims.generateFrameNumbers("img_porteC2_1", { start: 0, end: 7 }),
+      frameRate: 20,
+      repeat: 0
+    });
+    //création de la porte c2_2
+    porte2 = this.physics.add.staticSprite(1681, 383, "img_porteC2_2", 0);
+    open_portec2_2 = false;
+    this.anims.create({
+      key: "anim_ouvreporte2",
+      frames: this.anims.generateFrameNumbers("img_porteC2_2", { start: 0, end: 7 }),
+      frameRate: 20,
+      repeat: 0
+    });
+    //création de la porte c2_3
+    porte3 = this.physics.add.staticSprite(2353, 383, "img_porteC2_3", 0);
+    open_portec2_3 = false;
+    this.anims.create({
+      key: "anim_ouvreporte3",
+      frames: this.anims.generateFrameNumbers("img_porteC2_3", { start: 0, end: 7 }),
+      frameRate: 20,
+      repeat: 0
+    });
+    //création de la porte c2_4
+    porte4 = this.physics.add.staticSprite(1585, 1503, "img_porteC2_4", 0);
+    open_portec2_4 = false;
+    this.anims.create({
+      key: "anim_ouvreporte4",
+      frames: this.anims.generateFrameNumbers("img_porteC2_4", { start: 0, end: 7 }),
+      frameRate: 20,
+      repeat: 0
+    });
+    //création de la porte c2_5
+    porte5 = this.physics.add.staticSprite(2257, 1055, "img_porteC2_5", 0);
+    open_portec2_5 = false;
+    this.anims.create({
+      key: "anim_ouvreporte5",
+      frames: this.anims.generateFrameNumbers("img_porteC2_5", { start: 0, end: 7 }),
+      frameRate: 20,
+      repeat: 0
+    });
+
+
+    //création de l'escalier1
+    escalier1 = this.physics.add.staticSprite(1054, 2298, "img_escalier1", 0);
+
+player = this.physics.add.sprite(startX, startY, "dude.png");
     player.refreshBody();
     player.setBounce(0.2);
     player.setCollideWorldBounds(true);
@@ -109,55 +163,7 @@ export default class Couloir2 extends Phaser.Scene {
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
-    //création de la porte c2_1
-    porte1 = this.physics.add.staticSprite(1026, 378, "img_porteC2_1", 0);
-    open_portec2_1 = false;
-    this.anims.create({
-      key: "anim_ouvreporte1",
-      frames: this.anims.generateFrameNumbers("img_porteC2_1", { start: 0, end: 7 }),
-      frameRate: 20,
-      repeat: 0
-    });
-    //création de la porte c2_2
-    porte2 = this.physics.add.staticSprite(1696, 378, "img_porteC2_2", 0);
-    open_portec2_2 = false;
-    this.anims.create({
-      key: "anim_ouvreporte2",
-      frames: this.anims.generateFrameNumbers("img_porteC2_2", { start: 0, end: 7 }),
-      frameRate: 20,
-      repeat: 0
-    });
-    //création de la porte c2_3
-    porte3 = this.physics.add.staticSprite(2368, 378, "img_porteC2_3", 0);
-    open_portec2_3 = false;
-    this.anims.create({
-      key: "anim_ouvreporte3",
-      frames: this.anims.generateFrameNumbers("img_porteC2_3", { start: 0, end: 7 }),
-      frameRate: 20,
-      repeat: 0
-    });
-    //création de la porte c2_4
-    porte4 = this.physics.add.staticSprite(1600, 1498, "img_porteC2_4", 0);
-    open_portec2_4 = false;
-    this.anims.create({
-      key: "anim_ouvreporte4",
-      frames: this.anims.generateFrameNumbers("img_porteC2_4", { start: 0, end: 7 }),
-      frameRate: 20,
-      repeat: 0
-    });
-    //création de la porte c2_5
-    porte5 = this.physics.add.staticSprite(2272, 1050, "img_porteC2_5", 0);
-    open_portec2_5 = false;
-    this.anims.create({
-      key: "anim_ouvreporte5",
-      frames: this.anims.generateFrameNumbers("img_porteC2_5", { start: 0, end: 7 }),
-      frameRate: 20,
-      repeat: 0
-    });
-
-
-    //création de l'escalier1
-    escalier1 = this.physics.add.staticSprite(1054, 2298, "img_escalier1", 0);
+   
 
 
     // Animations du joueur
@@ -197,7 +203,7 @@ export default class Couloir2 extends Phaser.Scene {
             // le personnage est sur la porte1 et vient d'appuyer sur la touche entrée
             open_portec2_1 = true;
             this.time.delayedCall(500, () => {
-              this.scene.start("selection");
+              this.scene.start("Salle07");
             });
             porte1.anims.play("anim_ouvreporte1");
           }
@@ -207,7 +213,7 @@ export default class Couloir2 extends Phaser.Scene {
             // le personnage est sur la porte2 et vient d'appuyer sur la touche entrée
             open_portec2_2 = true;
             this.time.delayedCall(500, () => {
-              this.scene.start("selection");
+              this.scene.start("Salle08");
             });
             porte2.anims.play("anim_ouvreporte2");
           }
@@ -216,7 +222,7 @@ export default class Couloir2 extends Phaser.Scene {
             // le personnage est sur la porte3 et vient d'appuyer sur la touche entrée
             open_portec2_3 = true;
             this.time.delayedCall(500, () => {
-              this.scene.start("selection");
+              this.scene.start("Salle09");
             });
             porte3.anims.play("anim_ouvreporte3");
           }
@@ -225,7 +231,7 @@ export default class Couloir2 extends Phaser.Scene {
             // le personnage est sur la porte4 et vient d'appuyer sur la touche entrée
             open_portec2_4 = true;
             this.time.delayedCall(500, () => {
-              this.scene.start("selection");
+              this.scene.start("Salle10");
             });
             porte4.anims.play("anim_ouvreporte4");
           }
@@ -234,13 +240,13 @@ export default class Couloir2 extends Phaser.Scene {
             // le personnage est sur la porte5 et vient d'appuyer sur la touche entrée
             open_portec2_5 = true;
             this.time.delayedCall(500, () => {
-              this.scene.start("selection");
+              this.scene.start("Salle01");
             });
             porte5.anims.play("anim_ouvreporte5");
           }
     
           if (this.physics.overlap(player, escalier1) == true) {
-            this.scene.start("Couloir1");
+            this.scene.start("Couloir1", { x: 3392, y: 2330 });
           }}
     
 

@@ -19,6 +19,8 @@ var open_portec3_4 = false;
 // variables pour la porte c3_5
 var porte5;
 var open_portec3_5 = false;
+// escaliers1
+var escalier1;
 
 export default class Couloir3 extends Phaser.Scene {
   // constructeur de la classe
@@ -60,6 +62,10 @@ export default class Couloir3 extends Phaser.Scene {
       frameWidth: 103,
       frameHeight: 128
     });*/
+    this.load.image("img_escalier1", "src/assets/escalier.png", {
+      frameWidth: 50,
+      frameHeight: 200
+    });
   }
 
   create() {
@@ -83,17 +89,12 @@ export default class Couloir3 extends Phaser.Scene {
     calque1.setCollisionByProperty({ estSolide: true });
     calque2.setCollisionByProperty({ estSolide: true });
 
-    player = this.physics.add.sprite(1504, 2336, "dude.png");
-    player.refreshBody();
-    player.setBounce(0.2);
-    player.setCollideWorldBounds(true);
-    this.physics.add.collider(player, calque1);
-    this.physics.add.collider(player, calque2);
-    this.clavier = this.input.keyboard.createCursorKeys();
-    this.physics.add.collider(player, this.groupe_plateformes);
+const spawn = this.scene.settings.data || {};
+const startX = spawn.x ?? 1530;
+const startY = spawn.y ?? 2325;
 
-    //création des portes de transition vers les salles
-    porte1 = this.physics.add.staticSprite(1043, 512, "img_porteC3_1", 0);
+//création des portes de transition vers les salles
+    porte1 = this.physics.add.staticSprite(1011, 512, "img_porteC3_1", 0);
     open_portec3_1 = false;
     this.anims.create({
       key: "anim_ouvreporte1",
@@ -135,8 +136,17 @@ export default class Couloir3 extends Phaser.Scene {
     });*/
 
     //création de l'escalier1
-    escalier1 = this.physics.add.staticSprite(3392, 2425, "img_escalier1", 0);
+    escalier1 = this.physics.add.staticSprite(1536, 2420, "img_escalier1", 0);
 
+
+player = this.physics.add.sprite(startX, startY, "dude.png");
+    player.refreshBody();
+    player.setBounce(0.2);
+    player.setCollideWorldBounds(true);
+    this.physics.add.collider(player, calque1);
+    this.physics.add.collider(player, calque2);
+    this.clavier = this.input.keyboard.createCursorKeys();
+    this.physics.add.collider(player, this.groupe_plateformes);
 
     // Caméra centrée sur le joueur
     this.cameras.main.startFollow(player);
@@ -175,7 +185,7 @@ export default class Couloir3 extends Phaser.Scene {
         // le personnage est sur la porte1 et vient d'appuyer sur la touche entrée
         open_portec3_1 = true;
         this.time.delayedCall(500, () => {
-          this.scene.start("selection");
+          this.scene.start("Salle11");
         });
         porte1.anims.play("anim_ouvreporte1");
       }
@@ -183,15 +193,16 @@ export default class Couloir3 extends Phaser.Scene {
         // le personnage est sur la porte2 et vient d'appuyer sur la touche entrée
         open_portec3_2 = true;
         this.time.delayedCall(500, () => {
-          this.scene.start("selection");
+          this.scene.start("Salle12");
         });
+
         porte2.anims.play("anim_ouvreporte2");
       }
       if (open_portec3_3 == false && this.physics.overlap(player, porte3) == true) {
         // le personnage est sur la porte3 et vient d'appuyer sur la touche entrée
         open_portec3_3 = true;
         this.time.delayedCall(500, () => {
-          this.scene.start("selection");
+          this.scene.start("Salle13");
         });
         porte3.anims.play("anim_ouvreporte3");
       }
@@ -199,7 +210,7 @@ export default class Couloir3 extends Phaser.Scene {
         // le personnage est sur la porte4 et vient d'appuyer sur la touche entrée
         open_portec3_4 = true;
         this.time.delayedCall(500, () => {
-          this.scene.start("selection");
+          this.scene.start("Salle14");
         });
         porte4.anims.play("anim_ouvreporte4");
       }
@@ -211,6 +222,10 @@ export default class Couloir3 extends Phaser.Scene {
         });
         porte5.anims.play("anim_ouvreporte5");
       }*/
+
+      if (this.physics.overlap(player, escalier1) == true) {
+        this.scene.start("Couloir1", { x: 1279, y: 2110 });
+      }
     }
 
     // DEPLACEMENT DU PERSONNAGE
