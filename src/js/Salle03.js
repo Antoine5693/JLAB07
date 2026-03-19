@@ -39,15 +39,18 @@ export default class Salle03 extends Phaser.Scene {
     this.load.image("empty_heart", "src/assets/empty_heart.png");
     this.load.audio("son_tir", "src/assets/bullet-sound.mp3");
 
-    this.load.spritesheet("zombie_mort", "src/assets/zombiemort.png", { frameWidth: 32, frameHeight: 30 });
-    this.load.spritesheet("zombie_deplacement", "src/assets/zombiedeplacement.png", { frameWidth: 30, frameHeight: 30 });
-    this.load.spritesheet("zombie_attaque", "src/assets/zombieattaque.png", { frameWidth: 31, frameHeight: 32 });
+    this.load.spritesheet("zombie_mort", "src/assets/Zombiemort.png", { frameWidth: 32, frameHeight: 30 });
+    this.load.spritesheet("zombie_deplacement", "src/assets/Zombiedeplacement.png", { frameWidth: 30, frameHeight: 30 });
+    this.load.spritesheet("zombie_attaque", "src/assets/Zombieattaque.png", { frameWidth: 31, frameHeight: 32 });
     this.load.spritesheet("blob_move", "src/assets/blob move.png", { frameWidth: 25, frameHeight: 51, spacing: 24 });
+    this.load.audio("attaque_blob", "src/assets/slime_attack.mp3");
   }
 
   create() {
 
     this.sound.stopByKey("son_rodeur");
+    this.sonBlob = this.sound.add("attaque_blob", { loop: true, volume: 0.5 });
+    this.sonBlob.play();
     interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
     chest_opened = false;
     this.isInvincible = false;
@@ -345,7 +348,9 @@ export default class Salle03 extends Phaser.Scene {
 
   checkEnemiesDead() {
     if (this.enemies.countActive() === 0) {
+      this.sonBlob.stop();
       this.spawnChest();
+
     }
   }
 
