@@ -44,6 +44,7 @@ export default class Salle02 extends Phaser.Scene {
 
   create() {
 
+    this.sound.stopByKey("son_rodeur");
     interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
     clavier = this.input.keyboard.createCursorKeys();
     this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
