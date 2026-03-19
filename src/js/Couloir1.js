@@ -89,6 +89,12 @@ export default class Couloir1 extends Phaser.Scene {
     calque1.setCollisionByProperty({ estSolide: true });
     calque2.setCollisionByProperty({ estSolide: true });
     calque3.setCollisionByProperty({ estSolide: true });
+    calque2.getTileAt(109, 41)?.setCollision(false);
+    calque2.getTileAt(110, 41)?.setCollision(false);
+    calque2.getTileAt(111, 41)?.setCollision(false);
+    calque2.getTileAt(88, 62)?.setCollision(false);
+    calque2.getTileAt(89, 62)?.setCollision(false);
+    calque2.getTileAt(90, 62)?.setCollision(false);
 
     // Création des portes
     porte1 = this.physics.add.staticSprite(2285, 60, "img_porteC1_1", 0);
