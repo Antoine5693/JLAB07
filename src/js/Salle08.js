@@ -276,6 +276,7 @@ export default class Salle08 extends Phaser.Scene {
 
     zombiePositions.forEach(pos => {
       let z = this.enemies.create(pos.x, pos.y, "zombie_deplacement");
+      z.setScale(2.9); 
       z.setCollideWorldBounds(true);
       z.setBounce(1);
       z.setVelocityX(80);
