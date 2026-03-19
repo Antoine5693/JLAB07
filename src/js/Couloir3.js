@@ -384,6 +384,7 @@ export default class Couloir3 extends Phaser.Scene {
     
 
     if (this.physics.overlap(player, this.zone_escalier1) == true) {
+
       this.scene.start("Couloir1", { x: 1279, y: 2110 });
     }
   }
