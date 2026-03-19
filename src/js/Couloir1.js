@@ -246,7 +246,7 @@ this.anims.create({
 });
 
 // création du rodeur
-this.rodeur = this.physics.add.sprite(700, 400, "rodeurDroite");
+this.rodeur = this.physics.add.sprite(2500, 150, "rodeurDroite");
 
 this.rodeur.setScale(0.6);
 
