@@ -325,9 +325,6 @@ this.load.audio("son_rodeur", "src/assets/rodeur_sound.mp3");
         open_portec3_1 = true;
         porte1.anims.play("anim_ouvreporte1");
         this.time.delayedCall(500, () => { this.scene.start("Salle11"); });
-        this.time.delayedCall(500, () => {
-          this.scene.start("Salle11");
-        });
       }
 
       if (open_portec3_2 == false && this.physics.overlap(player, porte2) == true) {
@@ -353,10 +350,6 @@ this.load.audio("son_rodeur", "src/assets/rodeur_sound.mp3");
         porte5.anims.play("anim_ouvreporte5");
         this.time.delayedCall(500, () => { this.scene.start("BossZone"); });
       }
-      this.time.delayedCall(500, () => {
-        this.scene.start("BossZone");
-      });
-      porte5.anims.play("anim_ouvreporte5");
     
 
     if (this.physics.overlap(player, this.zone_escalier1) == true) {
