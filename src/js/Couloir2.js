@@ -1,5 +1,9 @@
 var player;
 var clavier;
+var bullets;
+var lastFired = 0;
+var wasSpaceDown = false;
+var lastDir = { x: 1, y: 0 };
 var enter;
 var interact;
 var porte1;
@@ -27,34 +31,30 @@ export default class Couloir2 extends Phaser.Scene {
     this.load.image("D1", "src/assets/Dela_dec1.png");
     this.load.image("D2", "src/assets/Dela_dec2.png");
     this.load.tilemapTiledJSON("carte4", "src/assets/Couloir2.tmj");
-    this.load.spritesheet("img_porteC2_1", "src/assets/porte1finie.png", {
-      frameWidth: 103,
-      frameHeight: 128
-    });
-    this.load.spritesheet("img_porteC2_2", "src/assets/porte1finie.png", {
-      frameWidth: 103,
-      frameHeight: 128
-    });
-    this.load.spritesheet("img_porteC2_3", "src/assets/porte1finie.png", {
-      frameWidth: 103,
-      frameHeight: 128
-    });
-    this.load.spritesheet("img_porteC2_4", "src/assets/porte1finie.png", {
-      frameWidth: 103,
-      frameHeight: 128
-    });
-    this.load.spritesheet("img_porteC2_5", "src/assets/porte1finie.png", {
-      frameWidth: 103,
-      frameHeight: 128
-    });
-    this.load.image("img_escalier1", "src/assets/escalier.png", {
-      frameWidth: 50,
-      frameHeight: 200
-    });
-    this.load.spritesheet("dude.png", "src/assets/dude.png", {
-      frameWidth: 32,
-      frameHeight: 48
-    });
+
+    // Sprites Jason
+    this.load.image("IdleJason", "src/assets/Jason/IdleJason.png");
+    this.load.spritesheet("jason_marcheavant", "src/assets/Jason/jason_marcheavant.png", { frameWidth: 1126 / 6, frameHeight: 320 });
+    this.load.spritesheet("jason_back", "src/assets/Jason/jason_back.png", { frameWidth: 984 / 6, frameHeight: 254 });
+    this.load.spritesheet("jason_marchedroite", "src/assets/Jason/jason_marchedroite.png", { frameWidth: 769 / 6, frameHeight: 320 });
+
+    // Balles et sons
+    this.load.image("img_balle", "src/assets/bullet.png");
+    this.load.audio("son_tir", "src/assets/bullet-sound.mp3");
+
+    // Coeurs
+    this.load.image("img_heart", "src/assets/heart.png");
+    this.load.image("empty_heart", "src/assets/empty_heart.png");
+
+    // Portes
+    this.load.spritesheet("img_porteC2_1", "src/assets/porte1finie.png", { frameWidth: 103, frameHeight: 128 });
+    this.load.spritesheet("img_porteC2_2", "src/assets/porte1finie.png", { frameWidth: 103, frameHeight: 128 });
+    this.load.spritesheet("img_porteC2_3", "src/assets/porte1finie.png", { frameWidth: 103, frameHeight: 128 });
+    this.load.spritesheet("img_porteC2_4", "src/assets/porte1finie.png", { frameWidth: 103, frameHeight: 128 });
+    this.load.spritesheet("img_porteC2_5", "src/assets/porte1finie.png", { frameWidth: 103, frameHeight: 128 });
+
+    // Escalier
+    this.load.image("img_escalier1", "src/assets/escalier.png", { frameWidth: 50, frameHeight: 200 });
   }
 
   create() {
@@ -63,6 +63,9 @@ export default class Couloir2 extends Phaser.Scene {
     clavier = this.input.keyboard.createCursorKeys();
     this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     enter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+
+    this.sonTir = this.sound.add("son_tir");
+    bullets = this.physics.add.group({ allowGravity: false });
 
     // Tilemap
     const map = this.add.tilemap("carte4");
@@ -128,14 +131,18 @@ export default class Couloir2 extends Phaser.Scene {
 
     // Escalier — hitbox physique + zone de détection
     escalier1 = this.physics.add.staticSprite(1054, 2298, "img_escalier1", 0);
-    escalier1.setSize(escalier1.displayWidth, 10);
-    escalier1.setOffset(0, escalier1.displayHeight - 10);
-    this.zone_escalier1 = this.add.zone(escalier1.x, escalier1.y, escalier1.width, escalier1.height);
+    var e1w = escalier1.width;
+    var e1h = escalier1.height;
+    escalier1.setSize(e1w, e1h - 150); // hitbox réduite
+    this.zone_escalier1 = this.add.zone(1054, 2298, e1w, e1h); // zone pleine taille
     this.physics.add.existing(this.zone_escalier1, true);
 
-    // Joueur
-    player = this.physics.add.sprite(startX, startY, "dude.png");
-    player.setBounce(0.2);
+
+    // Joueur Jason
+    player = this.physics.add.sprite(startX, startY, "IdleJason");
+    player.setScale(0.4);
+    player.setSize(160, 250);
+    player.setOffset(40, 20);
     player.setCollideWorldBounds(true);
 
     // Caméra
@@ -143,28 +150,44 @@ export default class Couloir2 extends Phaser.Scene {
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
-    // Animations du joueur
+    // Animations Jason
     this.anims.create({
-      key: "anim_tourne_gauche",
-      frames: this.anims.generateFrameNumbers("dude.png", { start: 0, end: 3 }),
+      key: "anim_tourne_droite",
+      frames: this.anims.generateFrameNumbers("jason_marchedroite", { start: 0, end: 5 }),
       frameRate: 10,
       repeat: -1
     });
     this.anims.create({
-      key: "anim_face",
-      frames: [{ key: "dude.png", frame: 4 }],
-      frameRate: 20
+      key: "anim_marche_arriere",
+      frames: this.anims.generateFrameNumbers("jason_back", { start: 0, end: 5 }),
+      frameRate: 10,
+      repeat: -1
     });
     this.anims.create({
-      key: "anim_tourne_droite",
-      frames: this.anims.generateFrameNumbers("dude.png", { start: 5, end: 8 }),
+      key: "anim_marche_avant",
+      frames: this.anims.generateFrameNumbers("jason_marcheavant", { start: 0, end: 5 }),
       frameRate: 10,
       repeat: -1
     });
 
+    // Coeurs
+    let hp = this.registry.get('hp');
+    let hpMax = this.registry.get('hpMax');
+    if (!hpMax) { hpMax = 3; this.registry.set('hpMax', 3); }
+    if (!hp) { hp = 3; this.registry.set('hp', 3); }
+    this.hearts = [];
+    for (let i = 0; i < hpMax; i++) {
+      let h = this.add.image(16 + i * 35, 16, i < hp ? "img_heart" : "empty_heart")
+        .setScale(0.09).setOrigin(0, 0).setScrollFactor(0);
+      this.hearts.push(h);
+    }
+
     // ---- COLLIDERS CALQUES ----
     this.physics.add.collider(player, calque1);
     this.physics.add.collider(player, calque2);
+
+    this.physics.add.collider(bullets, calque1, (bullet) => { bullet.destroy(); });
+    this.physics.add.collider(bullets, calque2, (bullet) => { bullet.destroy(); });
 
     // ---- HITBOX MOITIÉ SUPÉRIEURE + COLLIDERS PORTES ----
     porte1.setSize(103, 64);
@@ -193,8 +216,64 @@ export default class Couloir2 extends Phaser.Scene {
 
   update() {
 
-    player.setVelocityX(0);
-    player.setVelocityY(0);
+    player.setVelocity(0);
+
+    // Déplacement horizontal
+    if (clavier.left.isDown) {
+      player.setVelocityX(-160);
+      player.setScale(0.6);
+      player.setSize(100, 150);
+      player.setFlipX(true);
+      player.anims.play("anim_tourne_droite", true);
+    } else if (clavier.right.isDown) {
+      player.setVelocityX(160);
+      player.setScale(0.6);
+      player.setSize(100, 150);
+      player.setFlipX(false);
+      player.anims.play("anim_tourne_droite", true);
+    }
+
+    // Déplacement vertical
+    if (clavier.up.isDown) {
+      player.setVelocityY(-160);
+      player.setScale(0.55);
+      player.setSize(100, 150);
+      player.setOffset(player.width / 2 - 50, player.height / 2 - 75);
+      player.anims.play("anim_marche_arriere", true);
+    } else if (clavier.down.isDown) {
+      player.setVelocityY(160);
+      player.setScale(0.45);
+      player.setSize(130, 200);
+      player.setOffset(player.width / 2 - 65, player.height / 2 - 75);
+      player.anims.play("anim_marche_avant", true);
+    }
+
+    // Idle
+    if (player.body.velocity.x === 0 && player.body.velocity.y === 0) {
+      player.setTexture("IdleJason");
+      player.setScale(0.4);
+      player.setSize(160, 250);
+      player.setOffset(40, 20);
+    }
+
+    // Direction pour tirer
+    lastDir.x = 0;
+    lastDir.y = 0;
+    if (clavier.left.isDown) lastDir.x = -1;
+    if (clavier.right.isDown) lastDir.x = 1;
+    if (clavier.up.isDown) lastDir.y = -1;
+    if (clavier.down.isDown) lastDir.y = 1;
+
+    // Tir
+    if (this.keySpace.isDown && !wasSpaceDown && this.time.now > lastFired) {
+      let bullet = bullets.create(player.x, player.y, "img_balle");
+      bullet.setScale(0.25);
+      this.sonTir.play();
+      bullet.setVelocityX(400 * lastDir.x);
+      bullet.setVelocityY(400 * lastDir.y);
+      lastFired = this.time.now + 300;
+    }
+    wasSpaceDown = this.keySpace.isDown;
 
     // Ouverture des portes / escaliers
     if (Phaser.Input.Keyboard.JustDown(interact) == true) {
@@ -202,65 +281,36 @@ export default class Couloir2 extends Phaser.Scene {
       if (open_portec2_1 == false && this.physics.overlap(player, porte1) == true) {
         open_portec2_1 = true;
         porte1.anims.play("anim_ouvreporte1");
-        this.time.delayedCall(500, () => {
-          this.scene.start("Salle07");
-        });
+        this.time.delayedCall(500, () => { this.scene.start("Salle07"); });
       }
 
       if (open_portec2_2 == false && this.physics.overlap(player, porte2) == true) {
         open_portec2_2 = true;
         porte2.anims.play("anim_ouvreporte2");
-        this.time.delayedCall(500, () => {
-          this.scene.start("Salle08");
-        });
+        this.time.delayedCall(500, () => { this.scene.start("Salle08"); });
       }
 
       if (open_portec2_3 == false && this.physics.overlap(player, porte3) == true) {
         open_portec2_3 = true;
         porte3.anims.play("anim_ouvreporte3");
-        this.time.delayedCall(500, () => {
-          this.scene.start("Salle09");
-        });
+        this.time.delayedCall(500, () => { this.scene.start("Salle09"); });
       }
 
       if (open_portec2_4 == false && this.physics.overlap(player, porte4) == true) {
         open_portec2_4 = true;
         porte4.anims.play("anim_ouvreporte4");
-        this.time.delayedCall(500, () => {
-          this.scene.start("Salle10");
-        });
+        this.time.delayedCall(500, () => { this.scene.start("Salle10"); });
       }
 
       if (open_portec2_5 == false && this.physics.overlap(player, porte5) == true) {
         open_portec2_5 = true;
         porte5.anims.play("anim_ouvreporte5");
-        this.time.delayedCall(500, () => {
-          this.scene.start("Salle01");
-        });
+        this.time.delayedCall(500, () => { this.scene.start("Salle01"); });
       }
 
       if (this.physics.overlap(player, this.zone_escalier1) == true) {
         this.scene.start("Couloir1", { x: 3392, y: 2330 });
       }
-    }
-
-    // Déplacement du joueur
-    if (clavier.left.isDown) {
-      player.setVelocityX(-160);
-      player.anims.play("anim_tourne_gauche", true);
-    } else if (clavier.right.isDown) {
-      player.setVelocityX(160);
-      player.anims.play("anim_tourne_droite", true);
-    }
-
-    if (clavier.up.isDown) {
-      player.setVelocityY(-160);
-    } else if (clavier.down.isDown) {
-      player.setVelocityY(160);
-    }
-
-    if (player.body.velocity.x === 0 && player.body.velocity.y === 0) {
-      player.anims.play("anim_face", true);
     }
   }
 }
