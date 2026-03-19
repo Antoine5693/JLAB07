@@ -65,6 +65,9 @@ export default class Salle03 extends Phaser.Scene {
     this.calque3.setCollisionByProperty({ estSolide: true });
 
     porte = this.physics.add.staticSprite(335, 65, "img_porte1", 0);
+     porte.setSize(porte.width, porte.height / 2);         // hauteur divisée par 2
+    porte.setOffset(0, 0);  
+    open_porte1 = false;
     open_porte1 = false;
     this.anims.create({
       key: "anim_ouvreporte1",
@@ -169,6 +172,8 @@ export default class Salle03 extends Phaser.Scene {
     this.physics.add.overlap(player, this.enemies, () => {
       this.takeDamage();
     }, null, this);
+
+      this.physics.add.collider(porte, player);
   }
 
   update() {
@@ -176,7 +181,7 @@ export default class Salle03 extends Phaser.Scene {
       this.physics.overlap(player, porte) == true) {
       open_porte1 = true;
       this.time.delayedCall(500, () => {
-        this.scene.start("BossZone");
+        this.scene.start("Couloir1", { x: 1312, y: 800 });
       });
       porte.anims.play("anim_ouvreporte1");
     }

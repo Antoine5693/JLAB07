@@ -126,7 +126,6 @@ const startY = spawn.y ?? 2325;
       frameRate: 20,
       repeat: 0
     });
-    
     porte5 = this.physics.add.staticSprite(1535, 512, "img_porteC3_5", 0);
     open_portec3_5 = false;
     this.anims.create({
@@ -136,12 +135,15 @@ const startY = spawn.y ?? 2325;
       repeat: 0
     });
 
-    //création de l'escalier1
+    // Escalier
     escalier1 = this.physics.add.staticSprite(1536, 2420, "img_escalier1", 0);
+    escalier1.setSize(escalier1.displayWidth, 10);
+    escalier1.setOffset(0, escalier1.displayHeight - 10);
+    this.zone_escalier1 = this.add.zone(escalier1.x, escalier1.y, escalier1.width, escalier1.height);
+    this.physics.add.existing(this.zone_escalier1, true);
 
-
-player = this.physics.add.sprite(startX, startY, "dude.png");
-    player.refreshBody();
+    // Joueur
+    player = this.physics.add.sprite(startX, startY, "dude.png");
     player.setBounce(0.2);
     player.setCollideWorldBounds(true);
     this.physics.add.collider(player, calque1);
@@ -167,53 +169,117 @@ player = this.physics.add.sprite(startX, startY, "dude.png");
       frames: [{ key: "dude.png", frame: 4 }],
       frameRate: 20
     });
-
     this.anims.create({
       key: "anim_tourne_droite",
       frames: this.anims.generateFrameNumbers("dude.png", { start: 5, end: 8 }),
       frameRate: 10,
       repeat: -1
     });
+    this.anims.create({
+  key: "rodeurDroite",
+  frames: this.anims.generateFrameNumbers("rodeurDroite", { start: 0, end: 5 }),
+  frameRate: 5,
+  repeat: -1
+});
 
+    // ---- COLLIDERS CALQUES ----
+    this.physics.add.collider(player, calque1);
+    this.physics.add.collider(player, calque2);
+
+    // ---- HITBOX MOITIÉ SUPÉRIEURE + COLLIDERS PORTES ----
+    porte1.setSize(103, 64);
+    porte1.setOffset(0, 0);
+    this.physics.add.collider(player, porte1);
+
+    porte2.setSize(103, 64);
+    porte2.setOffset(0, 0);
+    this.physics.add.collider(player, porte2);
+
+    porte3.setSize(103, 64);
+    porte3.setOffset(0, 0);
+    this.physics.add.collider(player, porte3);
+
+    porte4.setSize(103, 64);
+    porte4.setOffset(0, 0);
+    this.physics.add.collider(player, porte4);
+
+    this.physics.add.collider(player, escalier1); 
+
+    /*porte5.setSize(103, 64);
+    porte5.setOffset(0, 0);
+    this.physics.add.collider(player, porte5);*/
+this.anims.create({
+  key: "rodeurGauche",
+  frames: this.anims.generateFrameNumbers("rodeurGauche", { start: 0, end: 5 }),
+  frameRate: 5,
+  repeat: -1
+});
+
+// création du rodeur
+this.rodeur = this.physics.add.sprite(1500, 1300, "rodeurDroite");
+
+this.rodeur.setScale(0.6);
+
+// réduction de la hitbox
+this.rodeur.body.setSize(60, 90);
+
+// repositionnement de la hitbox dans le sprite
+this.rodeur.body.setOffset(50, 70);
+// son
+this.sonRodeur = this.sound.add("son_rodeur", {
+  loop: true,
+  volume: 1.8
+});
+
+this.sonRodeur.play();
+
+this.rodeur.anims.play("rodeurDroite", true);
+
+// collisions map
+this.physics.add.collider(this.rodeur, calque1);
+this.physics.add.collider(this.rodeur, calque2);
+
+  
   }
 
   update() {
 
-    //ouverture des portes/escaliers
+    player.setVelocityX(0);
+    player.setVelocityY(0);
+
+    // Ouverture des portes / escaliers
     if (Phaser.Input.Keyboard.JustDown(interact) == true) {
-      //ouverture de la porte 1
+
       if (open_portec3_1 == false && this.physics.overlap(player, porte1) == true) {
         // le personnage est sur la porte1 et vient d'appuyer sur la touche entrée
         open_portec3_1 = true;
         this.time.delayedCall(500, () => {
           this.scene.start("Salle11");
         });
-        porte1.anims.play("anim_ouvreporte1");
       }
+
       if (open_portec3_2 == false && this.physics.overlap(player, porte2) == true) {
-        // le personnage est sur la porte2 et vient d'appuyer sur la touche entrée
         open_portec3_2 = true;
+        porte2.anims.play("anim_ouvreporte2");
         this.time.delayedCall(500, () => {
           this.scene.start("Salle12");
         });
-
-        porte2.anims.play("anim_ouvreporte2");
       }
+
       if (open_portec3_3 == false && this.physics.overlap(player, porte3) == true) {
-        // le personnage est sur la porte3 et vient d'appuyer sur la touche entrée
         open_portec3_3 = true;
+        porte3.anims.play("anim_ouvreporte3");
         this.time.delayedCall(500, () => {
           this.scene.start("Salle13");
         });
-        porte3.anims.play("anim_ouvreporte3");
       }
+
       if (open_portec3_4 == false && this.physics.overlap(player, porte4) == true) {
-        // le personnage est sur la porte4 et vient d'appuyer sur la touche entrée
         open_portec3_4 = true;
+        porte4.anims.play("anim_ouvreporte4");
         this.time.delayedCall(500, () => {
           this.scene.start("Salle14");
         });
-        porte4.anims.play("anim_ouvreporte4");
       }
       if (open_portec3_5 == false && this.physics.overlap(player, porte5) == true) {
         // le personnage est sur la porte5 et vient d'appuyer sur la touche entrée
@@ -224,12 +290,31 @@ player = this.physics.add.sprite(startX, startY, "dude.png");
         porte5.anims.play("anim_ouvreporte5");
       }
 
-      if (this.physics.overlap(player, escalier1) == true) {
+      if (this.physics.overlap(player, this.zone_escalier1) == true) {
         this.scene.start("Couloir1", { x: 1279, y: 2110 });
       }
     }
 
-    // DEPLACEMENT DU PERSONNAGE
+    // Déplacement du joueur
+    if (clavier.left.isDown) {
+      player.setVelocityX(-160);
+      player.anims.play("anim_tourne_gauche", true);
+    } else if (clavier.right.isDown) {
+      player.setVelocityX(160);
+      player.anims.play("anim_tourne_droite", true);
+    }
+
+    if (clavier.up.isDown) {
+      player.setVelocityY(-160);
+    } else if (clavier.down.isDown) {
+      player.setVelocityY(160);
+    }
+
+    if (player.body.velocity.x === 0 && player.body.velocity.y === 0) {
+      player.anims.play("anim_face", true);
+    }
+
+ // DEPLACEMENT DU PERSONNAGE
 
     player.setVelocityX(0);
     player.setVelocityY(0);
