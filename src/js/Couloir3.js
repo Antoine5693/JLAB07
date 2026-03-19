@@ -59,8 +59,8 @@ export default class Couloir3 extends Phaser.Scene {
       frameHeight: 128
     });
     this.load.spritesheet("img_porteC3_5", "src/assets/spritesheet_porte2coul.png", {
-      frameWidth: 206,
-      frameHeight: 128
+      frameWidth: 150,
+      frameHeight: 127 
     });
     this.load.image("img_escalier1", "src/assets/escalier.png", {
       frameWidth: 50,
@@ -126,6 +126,7 @@ const startY = spawn.y ?? 2325;
       frameRate: 20,
       repeat: 0
     });
+    
     porte5 = this.physics.add.staticSprite(1535, 512, "img_porteC3_5", 0);
     open_portec3_5 = false;
     this.anims.create({
