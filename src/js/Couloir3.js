@@ -349,9 +349,6 @@ export default class Couloir3 extends Phaser.Scene {
         open_portec3_1 = true;
         porte1.anims.play("anim_ouvreporte1");
         this.time.delayedCall(500, () => { this.scene.start("Salle11"); });
-        this.time.delayedCall(500, () => {
-          this.scene.start("Salle11");
-        });
       }
 
       if (open_portec3_2 == false && this.physics.overlap(player, porte2) == true) {
@@ -377,10 +374,6 @@ export default class Couloir3 extends Phaser.Scene {
         porte5.anims.play("anim_ouvreporte5");
         this.time.delayedCall(500, () => { this.scene.start("BossZone"); });
       }
-      this.time.delayedCall(500, () => {
-        this.scene.start("BossZone");
-      });
-      porte5.anims.play("anim_ouvreporte5");
     
 
     if (this.physics.overlap(player, this.zone_escalier1) == true) {
