@@ -6,10 +6,7 @@ var wasSpaceDown = false;
 var lastDir = { x: 1, y: 0 };
 var hasgun = true;
 var boss;
-var hp
-var hpMax;
-var hearts = [];
-var isInvincible = false;
+
 
 export default class BossZone extends Phaser.Scene {
   constructor() {
@@ -56,16 +53,7 @@ export default class BossZone extends Phaser.Scene {
     this.attackDistance = 120;
     this.patternTimer = 0;
 
-    hp = 3;
-    hpMax = 3;
 
-    for (let i = 0; i < hpMax; i++) {
-    let h = this.add.image(16 + i * 35, 16, i < hp ? "img_heart" : "empty_heart")
-        .setScale(0.09)
-        .setOrigin(0, 0)
-        .setScrollFactor(0);
-    hearts.push(h);
-}
 
     clavier = this.input.keyboard.createCursorKeys();
     this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
