@@ -168,6 +168,8 @@ export default class selection extends Phaser.Scene {
     this.load.spritesheet("jason_marchedroite", "src/assets/Jason/jason_marchedroite.png", { frameWidth: 769 / 6, frameHeight: 320 });
 
     this.load.image("game_over", "src/assets/Game_Over.png")
+
+    this.load.image("victory", "src/assets/Victory.png");
   }
 
 
