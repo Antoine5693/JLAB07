@@ -58,10 +58,10 @@ export default class Couloir3 extends Phaser.Scene {
       frameWidth: 103,
       frameHeight: 128
     });
-    /*this.load.spritesheet("img_porteC3_5", "src/assets/porte1finie.png", {
-      frameWidth: 103,
+    this.load.spritesheet("img_porteC3_5", "src/assets/spritesheet_porte2coul.png", {
+      frameWidth: 206,
       frameHeight: 128
-    });*/
+    });
     this.load.image("img_escalier1", "src/assets/escalier.png", {
       frameWidth: 50,
       frameHeight: 200
@@ -126,14 +126,14 @@ const startY = spawn.y ?? 2325;
       frameRate: 20,
       repeat: 0
     });
-    /*porte5 = this.physics.add.staticSprite(128, 608, "img_porteC3_5", 0);
+    porte5 = this.physics.add.staticSprite(1535, 512, "img_porteC3_5", 0);
     open_portec3_5 = false;
     this.anims.create({
       key: "anim_ouvreporte5",
       frames: this.anims.generateFrameNumbers("img_porteC3_5", { start: 0, end: 7 }),
       frameRate: 20,
       repeat: 0
-    });*/
+    });
 
     //création de l'escalier1
     escalier1 = this.physics.add.staticSprite(1536, 2420, "img_escalier1", 0);
@@ -214,14 +214,14 @@ player = this.physics.add.sprite(startX, startY, "dude.png");
         });
         porte4.anims.play("anim_ouvreporte4");
       }
-      /*if (open_portec3_5 == false && this.physics.overlap(player, porte5) == true) {
+      if (open_portec3_5 == false && this.physics.overlap(player, porte5) == true) {
         // le personnage est sur la porte5 et vient d'appuyer sur la touche entrée
         open_portec3_5 = true;
         this.time.delayedCall(500, () => {
-          this.scene.start("selection");
+          this.scene.start("BossZone");
         });
         porte5.anims.play("anim_ouvreporte5");
-      }*/
+      }
 
       if (this.physics.overlap(player, escalier1) == true) {
         this.scene.start("Couloir1", { x: 1279, y: 2110 });
