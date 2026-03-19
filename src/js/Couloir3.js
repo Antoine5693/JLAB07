@@ -360,6 +360,7 @@ this.load.audio("son_rodeur", "src/assets/rodeur_sound.mp3");
     
 
     if (this.physics.overlap(player, this.zone_escalier1) == true) {
+
       this.scene.start("Couloir1", { x: 1279, y: 2110 });
     }}
 
