@@ -76,15 +76,60 @@ export default class Salle02 extends Phaser.Scene {
 
     this.boxGroup = this.physics.add.group();
 
-    const boxPositions = [
-      { x: 100, y: 300 },
-      { x: 160, y: 300 },
-      { x: 220, y: 300 },
-      { x: 280, y: 300 },
-      { x: 340, y: 300 }
-    ];
-    boxPositions.forEach(pos => {
-      const b = this.physics.add.sprite(pos.x, pos.y, "box").setScale(0.20);
+const boxPositions = [
+    { x: 100, y: 300 },
+    { x: 160, y: 300 },
+    { x: 220, y: 300 },
+    { x: 280, y: 300 },
+    { x: 340, y: 300 },
+    { x: 400, y: 300 },
+    { x: 460, y: 300 },
+    { x: 520, y: 300 },
+    { x: 580, y: 300 },
+    { x: 640, y: 300 },
+    { x: 100, y: 360 },
+    { x: 160, y: 360 },
+    { x: 220, y: 360 },
+    { x: 280, y: 360 },
+    { x: 340, y: 360 },
+    { x: 400, y: 360 },
+    { x: 460, y: 360 },
+    { x: 520, y: 360 },
+    { x: 580, y: 360 },
+    { x: 640, y: 360 },
+    { x: 100, y: 420 },
+    { x: 160, y: 420 },
+    { x: 220, y: 420 },
+    { x: 280, y: 420 },
+    { x: 340, y: 420 },
+    { x: 400, y: 420 },
+    { x: 460, y: 420 },
+    { x: 520, y: 420 },
+    { x: 580, y: 420 },
+    { x: 640, y: 420 },
+    { x: 100, y: 480 },
+    { x: 160, y: 480 },
+    { x: 220, y: 480 },
+    { x: 280, y: 480 },
+    { x: 340, y: 480 },
+    { x: 400, y: 480 },
+    { x: 460, y: 480 },
+    { x: 520, y: 480 },
+    { x: 580, y: 480 },
+    { x: 640, y: 480 },
+    { x: 100, y: 540 },
+    { x: 160, y: 540 },
+    { x: 220, y: 540 },
+    { x: 280, y: 540 },
+    { x: 340, y: 540 },
+    { x: 400, y: 540 },
+    { x: 460, y: 540 },
+    { x: 520, y: 540 },
+    { x: 580, y: 540 },
+    { x: 640, y: 540 }
+];
+boxPositions.forEach(pos => {
+    const b = this.physics.add.sprite(pos.x, pos.y, "box").setScale(0.20);
 
       const scaledW = b.width * 0.50;
       const scaledH = b.height * 0.50;

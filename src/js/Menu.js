@@ -31,10 +31,11 @@ export default class Menu extends Phaser.Scene {
 
     //Cas ou la souris passe sur le bouton play
     bouton_play.on("pointerover", () => {
+    bouton_play.setScale(0.55); //  légèrement plus grand
     });
-    
-    //Cas ou la souris ne passe plus sur le bouton play
+
     bouton_play.on("pointerout", () => {
+    bouton_play.setScale(0.5); //  retour à la taille normale
     });
 
 
@@ -52,10 +53,11 @@ export default class Menu extends Phaser.Scene {
 
     //Cas ou la souris passe sur le bouton exit
     bouton_exit.on("pointerover", () => {
+    bouton_exit.setScale(0.55); //  légèrement plus grand
     });
-    
-    //Cas ou la souris ne passe plus sur le bouton exit
+
     bouton_exit.on("pointerout", () => {
+    bouton_exit.setScale(0.5); //  retour à la taille normale
     });
 
 
@@ -63,6 +65,7 @@ export default class Menu extends Phaser.Scene {
     // on ferme le jeu
     bouton_exit.on("pointerup", () => {
       this.game.destroy();
+      window.close();
     });
   }
 } 
