@@ -46,6 +46,8 @@ export default class Salle09 extends Phaser.Scene {
   }
 
   create() {
+
+    this.sound.stopByKey("son_rodeur");
     interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
     chest_opened = false;
     this.isInvincible = false;

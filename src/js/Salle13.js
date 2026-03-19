@@ -58,6 +58,7 @@ export default class Salle13 extends Phaser.Scene {
     chest_opened = false;
     this.artifact = this.registry.get('artifacts') || 0;
 
+    this.sound.stopByKey("son_rodeur");
 
     this.anims.create({
       key: "anim_chest",
