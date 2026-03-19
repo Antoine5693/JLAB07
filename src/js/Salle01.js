@@ -39,14 +39,20 @@ export default class Salle01 extends Phaser.Scene {
     this.load.image("empty_heart", "src/assets/empty_heart.png");
     this.load.audio("son_tir", "src/assets/bullet-sound.mp3");
 
-    this.load.spritesheet("zombie_mort", "src/assets/zombiemort.png", { frameWidth: 32, frameHeight: 30 });
-    this.load.spritesheet("zombie_deplacement", "src/assets/zombiedeplacement.png", { frameWidth: 30, frameHeight: 30 });
-    this.load.spritesheet("zombie_attaque", "src/assets/zombieattaque.png", { frameWidth: 31, frameHeight: 32 });
+    this.load.spritesheet("zombie_mort", "src/assets/Zombiemort.png", { frameWidth: 32, frameHeight: 30 });
+    this.load.spritesheet("zombie_deplacement", "src/assets/Zombiedeplacement.png", { frameWidth: 30, frameHeight: 30 });
+    this.load.spritesheet("zombie_attaque", "src/assets/Zombieattaque.png", { frameWidth: 31, frameHeight: 32 });
     this.load.spritesheet("blob_move", "src/assets/blob move.png", { frameWidth: 25, frameHeight: 51, spacing: 24 });
+    this.load.audio("attaque_blob", "src/assets/slime_attack.mp3");
+    this.load.audio("son_zombie_attaque", "src/assets/zombie_attack_sound.mp3");
   }
 
   create() {
     this.sound.stopByKey("son_rodeur");
+    this.sonBlob = this.sound.add("attaque_blob", { loop: true, volume: 0.5 });
+    this.sonBlob.play();
+    this.sonZombie = this.sound.add("son_zombie_attaque", { loop: true, volume: 0.3 });
+    this.sonZombie.play();
     interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
     chest_opened = false;
     this.isInvincible = false;
@@ -287,7 +293,6 @@ export default class Salle01 extends Phaser.Scene {
       z.setVelocityX(80);
       z.anims.play("zombie_deplacement", true);
       z.hp = 5;
-      z.setScale(2);
       this.zombies.push(z);
     });
 
@@ -347,6 +352,8 @@ export default class Salle01 extends Phaser.Scene {
 
   checkEnemiesDead() {
     if (this.enemies.countActive() === 0) {
+      this.sonBlob.stop();
+      this.sonZombie.stop();
       this.spawnChest();
     }
   }
