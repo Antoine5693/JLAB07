@@ -486,6 +486,8 @@ export default class selection extends Phaser.Scene {
 
     //création de la porte
     porte = this.physics.add.staticSprite(625, 60, "img_porte1", 0);
+    porte.setSize(porte.width, porte.height / 2);         // hauteur divisée par 2
+    porte.setOffset(0, 0);  
     open_porte1 = false;
     this.anims.create({
       key: "anim_ouvreporte1",
@@ -572,6 +574,8 @@ export default class selection extends Phaser.Scene {
     this.physics.add.collider(bullets, calque4, function (bullet, platform) {
       bullet.destroy();
     });
+
+     this.physics.add.collider(porte, player)  // Collision entre le joueur et la porte
 
     // Collision entre le joueur et le coffre
     this.physics.add.collider(this.chest, player, function (chest, player) {
