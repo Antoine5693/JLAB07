@@ -192,7 +192,7 @@ export default class Salle13 extends Phaser.Scene {
       lumière2.setTexture(bouton2Active ? "Lamps1" : "Lamps2");
       lumière2.refreshBody();
       rep = (!bouton1Active && !bouton2Active && bouton3Active);
-      if (rep) this.spawnChest(); // ✅
+      if (rep) this.spawnChest(); // 
     }
 
     // Bouton 3 — allume/éteint
@@ -201,7 +201,7 @@ export default class Salle13 extends Phaser.Scene {
       lumière3.setTexture(bouton3Active ? "Lamps1" : "Lamps2");
       lumière3.refreshBody();
       rep = (!bouton1Active && !bouton2Active && bouton3Active);
-      if (rep) this.spawnChest(); // ✅
+      if (rep) this.spawnChest(); // 
     }
 
     // Interaction porte
