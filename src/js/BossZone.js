@@ -17,10 +17,21 @@ export default class BossZone extends Phaser.Scene {
     this.load.image("D", "src/assets/Dela_dec3.png");
     this.load.tilemapTiledJSON("carte5", "src/assets/BossZone.tmj");
 
-    this.load.spritesheet("dude.png", "src/assets/dude.png", { frameWidth: 32, frameHeight: 48 });
+    // Sprites Jason
+    this.load.image("IdleJason", "src/assets/Jason/IdleJason.png");
+    this.load.spritesheet("jason_marcheavant", "src/assets/Jason/jason_marcheavant.png", { frameWidth: 1126 / 6, frameHeight: 320 });
+    this.load.spritesheet("jason_back", "src/assets/Jason/jason_back.png", { frameWidth: 984 / 6, frameHeight: 254 });
+    this.load.spritesheet("jason_marchedroite", "src/assets/Jason/jason_marchedroite.png", { frameWidth: 769 / 6, frameHeight: 320 });
+
+    // Balles et sons
     this.load.image("img_balle", "src/assets/bullet.png");
     this.load.audio("son_tir", "src/assets/bullet-sound.mp3");
 
+    // Coeurs
+    this.load.image("img_heart", "src/assets/heart.png");
+    this.load.image("empty_heart", "src/assets/empty_heart.png");
+
+    // Boss
     this.load.spritesheet("boss_jump1", "src/assets/Zombie boss jump1 spritesheet.png", { frameWidth: 126, frameHeight: 225 });
     this.load.spritesheet("boss_jump2", "src/assets/Zombie boss jump2 spritesheet.png", { frameWidth: 135, frameHeight: 201 });
     this.load.spritesheet("boss_jump3", "src/assets/Zombie boss jump3 spritesheet.png", { frameWidth: 134, frameHeight: 140 });
@@ -53,8 +64,11 @@ export default class BossZone extends Phaser.Scene {
     calque1.setCollisionByProperty({ estSolide: true });
     calque2.setCollisionByProperty({ estSolide: true });
 
-    player = this.physics.add.sprite(480, 864, "dude.png");
-    player.setBounce(0.2);
+    // Joueur Jason
+    player = this.physics.add.sprite(480, 864, "IdleJason");
+    player.setScale(0.4);
+    player.setSize(160, 250);
+    player.setOffset(40, 20);
     player.setCollideWorldBounds(true);
     this.physics.add.collider(player, calque1);
     this.physics.add.collider(player, calque2);
@@ -63,9 +77,38 @@ export default class BossZone extends Phaser.Scene {
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
-    this.anims.create({ key: "anim_tourne_gauche", frames: this.anims.generateFrameNumbers("dude.png", { start: 0, end: 3 }), frameRate: 10, repeat: -1 });
-    this.anims.create({ key: "anim_face", frames: [{ key: "dude.png", frame: 4 }], frameRate: 20 });
-    this.anims.create({ key: "anim_tourne_droite", frames: this.anims.generateFrameNumbers("dude.png", { start: 5, end: 8 }), frameRate: 10, repeat: -1 });
+    // Animations Jason
+    this.anims.create({
+      key: "anim_tourne_droite",
+      frames: this.anims.generateFrameNumbers("jason_marchedroite", { start: 0, end: 5 }),
+      frameRate: 10, repeat: -1
+    });
+    this.anims.create({
+      key: "anim_marche_arriere",
+      frames: this.anims.generateFrameNumbers("jason_back", { start: 0, end: 5 }),
+      frameRate: 10, repeat: -1
+    });
+    this.anims.create({
+      key: "anim_marche_avant",
+      frames: this.anims.generateFrameNumbers("jason_marcheavant", { start: 0, end: 5 }),
+      frameRate: 10, repeat: -1
+    });
+
+    // Coeurs
+    let hp = this.registry.get('hp');
+    let hpMax = this.registry.get('hpMax');
+    if (!hpMax) { hpMax = 3; this.registry.set('hpMax', 3); }
+    if (!hp) { hp = 3; this.registry.set('hp', 3); }
+    this.hearts = [];
+    for (let i = 0; i < hpMax; i++) {
+      let h = this.add.image(16 + i * 35, 16, i < hp ? "img_heart" : "empty_heart")
+        .setScale(0.09).setOrigin(0, 0).setScrollFactor(0);
+      this.hearts.push(h);
+    }
+
+    // Colliders balles
+    this.physics.add.collider(bullets, calque1, (bullet) => { bullet.destroy(); });
+    this.physics.add.collider(bullets, calque2, (bullet) => { bullet.destroy(); });
 
     this.sonAttaqueSautée = this.sound.add("son_attaquesautee");
     this.sonAttaqueÉpée = this.sound.add("son_épée");
@@ -105,33 +148,65 @@ export default class BossZone extends Phaser.Scene {
     });
     this.bossSprites.moveD.setOrigin(0.5, 0.8);
 
-    this.bossCurrentAnim = "moveG"
+    this.bossCurrentAnim = "moveG";
   }
 
   playBossAnim(key) {
     if (this.bossCurrentAnim === key) return;
-    
     console.log("Changement vers :", key);
     console.log("Anim existe ?", this.anims.exists("boss_" + key));
     console.log("Frames :", this.anims.get("boss_" + key)?.frames?.map(f => f?.duration));
-    
     this.bossSprites[this.bossCurrentAnim].setVisible(false);
     this.bossSprites[this.bossCurrentAnim].anims.stop();
     this.bossCurrentAnim = key;
     this.bossSprites[key].setVisible(true);
     this.bossSprites[key].anims.play("boss_" + key, true);
-}
+  }
 
   update() {
     if (!player) return;
 
     player.setVelocity(0);
-    if (clavier.left.isDown) { player.setVelocityX(-160); player.anims.play("anim_tourne_gauche", true); }
-    else if (clavier.right.isDown) { player.setVelocityX(160); player.anims.play("anim_tourne_droite", true); }
-    if (clavier.up.isDown) player.setVelocityY(-160);
-    else if (clavier.down.isDown) player.setVelocityY(160);
-    if (player.body.velocity.x === 0 && player.body.velocity.y === 0) player.anims.play("anim_face", true);
 
+    // Déplacement horizontal
+    if (clavier.left.isDown) {
+      player.setVelocityX(-160);
+      player.setScale(0.6);
+      player.setSize(100, 150);
+      player.setFlipX(true);
+      player.anims.play("anim_tourne_droite", true);
+    } else if (clavier.right.isDown) {
+      player.setVelocityX(160);
+      player.setScale(0.6);
+      player.setSize(100, 150);
+      player.setFlipX(false);
+      player.anims.play("anim_tourne_droite", true);
+    }
+
+    // Déplacement vertical
+    if (clavier.up.isDown) {
+      player.setVelocityY(-160);
+      player.setScale(0.55);
+      player.setSize(100, 150);
+      player.setOffset(player.width / 2 - 50, player.height / 2 - 75);
+      player.anims.play("anim_marche_arriere", true);
+    } else if (clavier.down.isDown) {
+      player.setVelocityY(160);
+      player.setScale(0.45);
+      player.setSize(130, 200);
+      player.setOffset(player.width / 2 - 65, player.height / 2 - 75);
+      player.anims.play("anim_marche_avant", true);
+    }
+
+    // Idle
+    if (player.body.velocity.x === 0 && player.body.velocity.y === 0) {
+      player.setTexture("IdleJason");
+      player.setScale(0.4);
+      player.setSize(160, 250);
+      player.setOffset(40, 20);
+    }
+
+    // Direction pour tirer
     let dirX = 0, dirY = 0;
     if (clavier.left.isDown)  dirX -= 1;
     if (clavier.right.isDown) dirX += 1;
@@ -143,6 +218,7 @@ export default class BossZone extends Phaser.Scene {
       lastDir.y = dirY / mag;
     }
 
+    // Tir
     if (this.keySpace.isDown && !wasSpaceDown && this.time.now > lastFired && hasgun) {
       let bullet = bullets.create(player.x, player.y, "img_balle");
       bullet.setScale(0.25);
@@ -153,19 +229,19 @@ export default class BossZone extends Phaser.Scene {
     }
     wasSpaceDown = this.keySpace.isDown;
 
+    // IA Boss
     if (boss) {
-    Object.values(this.bossSprites).forEach(s => { s.x = boss.x; s.y = boss.y; });
+      Object.values(this.bossSprites).forEach(s => { s.x = boss.x; s.y = boss.y; });
 
-    let dx = player.x - boss.x;
-    let dy = player.y - boss.y;
-    let distance = Math.sqrt(dx * dx + dy * dy);
+      let dx = player.x - boss.x;
+      let dy = player.y - boss.y;
+      let distance = Math.sqrt(dx * dx + dy * dy);
 
-    if (distance > this.attackDistance) {
+      if (distance > this.attackDistance) {
         boss.setVelocityX((dx / distance) * 80);
         boss.setVelocityY((dy / distance) * 80);
         this.playBossAnim(dx < 0 ? "moveG" : "moveD");
-
-    } else {
+      } else {
         boss.setVelocity(0);
 
         let currentKey = this.bossCurrentAnim;
@@ -173,14 +249,16 @@ export default class BossZone extends Phaser.Scene {
         let animDone = isMoving || !this.bossSprites[currentKey].anims.isPlaying;
 
         if (this.time.now > this.patternTimer && animDone) {
-            this.patternTimer = this.time.now + 3000;
-            if (Phaser.Math.Between(0, 1) === 0) {
-                this.playBossAnim("attack");
-                this.sonAttaqueÉpée.play();
-            } else {
-                this.playBossAnim("jump" + Phaser.Math.Between(1, 3));
-                this.sonAttaqueSautée.play();
-            }
+          this.patternTimer = this.time.now + 3000;
+          if (Phaser.Math.Between(0, 1) === 0) {
+            this.playBossAnim("attack");
+            this.sonAttaqueÉpée.play();
+          } else {
+            this.playBossAnim("jump" + Phaser.Math.Between(1, 3));
+            this.sonAttaqueSautée.play();
+          }
         }
+      }
     }
-}}}
+  }
+}

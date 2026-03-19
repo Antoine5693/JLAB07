@@ -1,25 +1,39 @@
 var player;
 var clavier;
+var bullets;
+var lastFired = 0;
+var wasSpaceDown = false;
+var lastDir = { x: 1, y: 0 };
 var enter;
 var interact;
-
-// variables pour la porte de transition vers couloir1
-var porte; // pour la porte de transition vers couloir1
-var open_porte1 = false;//gère l'état de la porte 1
+var porte;
+var open_porte1 = false;
 
 export default class Salle14 extends Phaser.Scene {
-  // constructeur de la classe
   constructor() {
-    super({
-      key: "Salle14" //  ici on précise le nom de la classe en tant qu'identifiant
-    });
+    super({ key: "Salle14" });
   }
+
   preload() {
-    // assets pour le tilemap
     this.load.image("B", "src/assets/Background.png");
     this.load.image("D", "src/assets/Dela_dec2.png");
     this.load.tilemapTiledJSON("carte14", "src/assets/Salle01.tmj");
-        //asset pour la porte de transition vers couloir1
+
+    // Sprites Jason
+    this.load.image("IdleJason", "src/assets/Jason/IdleJason.png");
+    this.load.spritesheet("jason_marcheavant", "src/assets/Jason/jason_marcheavant.png", { frameWidth: 1126 / 6, frameHeight: 320 });
+    this.load.spritesheet("jason_back", "src/assets/Jason/jason_back.png", { frameWidth: 984 / 6, frameHeight: 254 });
+    this.load.spritesheet("jason_marchedroite", "src/assets/Jason/jason_marchedroite.png", { frameWidth: 769 / 6, frameHeight: 320 });
+
+    // Balles et sons
+    this.load.image("img_balle", "src/assets/bullet.png");
+    this.load.audio("son_tir", "src/assets/bullet-sound.mp3");
+
+    // Coeurs
+    this.load.image("img_heart", "src/assets/heart.png");
+    this.load.image("empty_heart", "src/assets/empty_heart.png");
+
+    // Porte
     this.load.spritesheet("img_porte1", "src/assets/porte1finie.png", {
       frameWidth: 103,
       frameHeight: 128
@@ -29,14 +43,15 @@ export default class Salle14 extends Phaser.Scene {
   create() {
 
     interact = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
-    
-    // clavier pour les déplacements du personnage
     clavier = this.input.keyboard.createCursorKeys();
     this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     enter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
-    // Création du tilemap et des plateformes à partir de Tiled
-    const map = this.add.tilemap( "carte14" );
+    this.sonTir = this.sound.add("son_tir");
+    bullets = this.physics.add.group({ allowGravity: false });
+
+    // Tilemap
+    const map = this.add.tilemap("carte14");
     const tileset1 = map.addTilesetImage("Background", "B");
     const tileset3 = map.addTilesetImage("1", "D");
     const calque1 = map.createLayer("Calque de Tuiles 1", [tileset1]);
@@ -44,73 +59,136 @@ export default class Salle14 extends Phaser.Scene {
     calque1.setCollisionByProperty({ estSolide: true });
     calque3.setCollisionByProperty({ estSolide: true });
 
-    //création de la porte
+    // Porte
     porte = this.physics.add.staticSprite(335, 65, "img_porte1", 0);
-     porte.setSize(porte.width, porte.height / 2);         // hauteur divisée par 2
-    porte.setOffset(0, 0);  
-    open_porte1 = false;
+    porte.setSize(porte.width, porte.height / 2);
+    porte.setOffset(0, 0);
     open_porte1 = false;
     this.anims.create({
       key: "anim_ouvreporte1",
-      frames: this.anims.generateFrameNumbers("img_porte1", {
-        start: 0, end: 7
-
-      }),
+      frames: this.anims.generateFrameNumbers("img_porte1", { start: 0, end: 7 }),
       frameRate: 20,
       repeat: 0
     });
 
-    player = this.physics.add.sprite(335, 150,  "dude.png");
-    player.refreshBody();
-    player.setBounce(0.2);
+    // Joueur Jason
+    player = this.physics.add.sprite(335, 150, "IdleJason");
+    player.setScale(0.4);
+    player.setSize(160, 250);
+    player.setOffset(40, 20);
     player.setCollideWorldBounds(true);
+
+    // Caméra
+    this.cameras.main.startFollow(player);
+    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+    this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+
+    // Animations Jason
+    this.anims.create({
+      key: "anim_tourne_droite",
+      frames: this.anims.generateFrameNumbers("jason_marchedroite", { start: 0, end: 5 }),
+      frameRate: 10, repeat: -1
+    });
+    this.anims.create({
+      key: "anim_marche_arriere",
+      frames: this.anims.generateFrameNumbers("jason_back", { start: 0, end: 5 }),
+      frameRate: 10, repeat: -1
+    });
+    this.anims.create({
+      key: "anim_marche_avant",
+      frames: this.anims.generateFrameNumbers("jason_marcheavant", { start: 0, end: 5 }),
+      frameRate: 10, repeat: -1
+    });
+
+    // Coeurs
+    let hp = this.registry.get('hp');
+    let hpMax = this.registry.get('hpMax');
+    if (!hpMax) { hpMax = 3; this.registry.set('hpMax', 3); }
+    if (!hp) { hp = 3; this.registry.set('hp', 3); }
+    this.hearts = [];
+    for (let i = 0; i < hpMax; i++) {
+      let h = this.add.image(16 + i * 35, 16, i < hp ? "img_heart" : "empty_heart")
+        .setScale(0.09).setOrigin(0, 0).setScrollFactor(0);
+      this.hearts.push(h);
+    }
+
+    // Colliders
     this.physics.add.collider(player, calque1);
     this.physics.add.collider(player, calque3);
-    this.clavier = this.input.keyboard.createCursorKeys();
-    this.physics.add.collider(player, this.groupe_plateformes);
-    this.physics.add.collider(player, porte); 
+    this.physics.add.collider(player, porte);
 
+    this.physics.add.collider(bullets, calque1, (bullet) => { bullet.destroy(); });
+    this.physics.add.collider(bullets, calque3, (bullet) => { bullet.destroy(); });
   }
 
   update() {
-        // interaction avec la porte de transition vers couloir1
+
+    // Interaction porte
     if (open_porte1 == false && Phaser.Input.Keyboard.JustDown(interact) == true &&
       this.physics.overlap(player, porte) == true) {
-      // le personnage est sur la porte1 et vient d'appuyer sur la touche entrée
       open_porte1 = true;
       this.time.delayedCall(500, () => {
-        // Envoie des coordonnées de respawn à la scène Couloir1
         this.scene.start("Couloir3", { x: 1876, y: 1696 });
       });
       porte.anims.play("anim_ouvreporte1");
     }
 
-    // DEPLACEMENT DU PERSONNAGE
+    // Déplacements
+    player.setVelocity(0);
 
-    player.setVelocityX(0);
-    player.setVelocityY(0);
-
-    // horizontal
     if (clavier.left.isDown) {
       player.setVelocityX(-160);
-      player.anims.play("anim_tourne_gauche", true);
+      player.setScale(0.6);
+      player.setSize(100, 150);
+      player.setFlipX(true);
+      player.anims.play("anim_tourne_droite", true);
     } else if (clavier.right.isDown) {
       player.setVelocityX(160);
+      player.setScale(0.6);
+      player.setSize(100, 150);
+      player.setFlipX(false);
       player.anims.play("anim_tourne_droite", true);
     }
 
-    // vertical
     if (clavier.up.isDown) {
       player.setVelocityY(-160);
+      player.setScale(0.55);
+      player.setSize(100, 150);
+      player.setOffset(player.width / 2 - 50, player.height / 2 - 75);
+      player.anims.play("anim_marche_arriere", true);
     } else if (clavier.down.isDown) {
       player.setVelocityY(160);
+      player.setScale(0.45);
+      player.setSize(130, 200);
+      player.setOffset(player.width / 2 - 65, player.height / 2 - 75);
+      player.anims.play("anim_marche_avant", true);
     }
 
-    // idling
+    // Idle
     if (player.body.velocity.x === 0 && player.body.velocity.y === 0) {
-      player.anims.play("anim_face", true);
+      player.setTexture("IdleJason");
+      player.setScale(0.4);
+      player.setSize(160, 250);
+      player.setOffset(40, 20);
     }
-   
-  
-}
+
+    // Direction pour tirer
+    lastDir.x = 0;
+    lastDir.y = 0;
+    if (clavier.left.isDown) lastDir.x = -1;
+    if (clavier.right.isDown) lastDir.x = 1;
+    if (clavier.up.isDown) lastDir.y = -1;
+    if (clavier.down.isDown) lastDir.y = 1;
+
+    // Tir
+    if (this.keySpace.isDown && !wasSpaceDown && this.time.now > lastFired) {
+      let bullet = bullets.create(player.x, player.y, "img_balle");
+      bullet.setScale(0.25);
+      this.sonTir.play();
+      bullet.setVelocityX(400 * lastDir.x);
+      bullet.setVelocityY(400 * lastDir.y);
+      lastFired = this.time.now + 300;
+    }
+    wasSpaceDown = this.keySpace.isDown;
+  }
 }
